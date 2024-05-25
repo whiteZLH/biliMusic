@@ -1,0 +1,44 @@
+{
+  "id": "4552573",
+  "name": "no name",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "629337",
+      "name": "声音",
+      "font_class": "shengyin",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "24086248",
+      "name": "icon-jingyin",
+      "font_class": "icon-jingyin",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "3092723",
+      "name": "pl-1",
+      "font_class": "pl-",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "20602182",
+      "name": "icon_bofang",
+      "font_class": "icon_bofang",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
+    },
+    {
+      "icon_id": "22624158",
+      "name": "暂停",
+      "font_class": "icon_zanting",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    }
+  ]
+}
