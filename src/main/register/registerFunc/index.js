@@ -1,7 +1,11 @@
 import { paramToGetUrl } from '../../utils'
 import { biliApi, defaultHeaders } from '../../common'
 import { mainWindow } from '../../index'
+import { search, getLyricsBySongId } from '../../qqmusic'
+// import { webFrame } from 'electron'
+const { webFrame } = require('electron')
 
+// TODO 加入异常控制
 const rp = require('request-promise')
 export async function req(e, data) {
   const url = paramToGetUrl(data.url, data.params)
@@ -33,15 +37,72 @@ export async function getVideoInfo(e, bvid) {
   let resultObj = JSON.parse(result)
   // 视频的cid
   const cid = resultObj.data.View.cid
-  // 视频的title
-  const plaintTitle = resultObj.data.View.title
+  // 视频的 title
+  const plaintTitle = resultObj.data.View.pages[0].part
+  // console.log(plaintTitle)
   // 获得视频所在分 p 的所有分p
   // 存在 分 p
   let allPages = []
-  if (resultObj.data.ugc_season) allPages = resultObj.data.View.ugc_season.sections[0].episodes
+  // 合集 每个都有自己的 bvid
+  if (resultObj.data.View.ugc_season) allPages = resultObj.data.View.ugc_season.sections[0].episodes
+  // 这个是分 p 获得分 p 的数据
+  // 确保
+  else {
+    allPages = resultObj.data.View.pages
+    for (let page of allPages) {
+      page.bvid = bvid
+      page.title = page.part
+    }
+  }
+  // console.log(JSON.stringify(allPages))
   // 获得单个page // TODO 屏蔽掉当前分 p 列表的差异
-  else allPages = resultObj.View.pages
+  // 视频背景音音乐
+  let musicId = ''
+  let musicName = ''
+  // 原唱名字
+  let musicOriginArtist = ''
+  for (const tag of resultObj.data.Tags) {
+    if (tag.tag_type === 'bgm') {
+      musicId = tag.music_id
+      musicName = tag.tag_name
+    }
+  }
+  // console.log(musicId)
+  // 如果成功获得了musicId，请求music信息
+  if (musicId) {
+    // 获得 musicInfoUrl
+    const musicInfoUrl = paramToGetUrl(biliApi.GET_BGM_INFO_BY_MUSICID, { music_id: musicId })
+    const musicInfo = await rp(musicInfoUrl, {
+      method: 'GET',
+      headers: defaultHeaders
+    })
+    const musicInfoObj = JSON.parse(musicInfo)
+    musicName = musicInfoObj.data.music_title
+    musicOriginArtist = musicInfoObj.data.origin_artist
+  }
 
+  //TODO 是否需要进行改变 进行歌词匹配 ? 当前是异步还是同步，
+  // 进行歌词的匹配
+  const musicInfos = await search(musicName)
+
+  let songId
+  // 优先匹配title 寻找最为匹配的歌曲
+  // 使用了pages[0].part
+  for (let musicInfo of musicInfos) {
+    if (plaintTitle.includes(musicInfo.musicName) && plaintTitle.includes(musicInfo.singerName)) {
+      songId = musicInfo.songId
+      break
+    }
+  }
+  let lyrics
+  // console.log(songId)
+  // 找到了歌曲
+  if (!songId) {
+    songId = musicInfos[0].songId
+  }
+  lyrics = await getLyricsBySongId(songId)
+
+  // 没找到歌曲
   // 获得视频流地址
   const url = paramToGetUrl(biliApi.GET_AUDIO_URL, {
     bvid: bvid,
@@ -61,6 +122,17 @@ export async function getVideoInfo(e, bvid) {
   videoInfo.plaintTitle = plaintTitle
   videoInfo.cid = cid
   videoInfo.allPages = allPages
-
+  videoInfo.musicName = musicName
+  videoInfo.musicOriginArtist = musicOriginArtist
+  videoInfo.lyrics = lyrics
+  /*
+   *allpage:page: {
+   * cid,bvid,title
+   * }
+   */
   return JSON.stringify(videoInfo)
+}
+
+export function clearCache() {
+  webFrame.clearCache()
 }

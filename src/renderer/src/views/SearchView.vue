@@ -26,6 +26,7 @@ const changeMusic = (bvid, pic, title) => {
       const videoInfoObj = JSON.parse(videoInfo)
       const musicUrl = videoInfoObj.dash.audio[0].baseUrl
       // 将这个包装为Player 的接收对象
+      // console.log(videoInfoObj.lyrics)
       const musicInfo = {
         musicSrc: musicUrl,
         // TODO 此后要会有 备用链接和图片等信息
@@ -33,12 +34,17 @@ const changeMusic = (bvid, pic, title) => {
         picUrl: pic,
         musicTitle: title,
         plaintMusicTitle: videoInfoObj.plaintTitle,
-        cid: videoInfoObj.cid
+        cid: videoInfoObj.cid,
+        musicName: videoInfoObj.musicName,
+        musicOriginArtist: videoInfoObj.musicOriginArtist,
+        musicLyrics: videoInfoObj.lyrics,
+        allPages: videoInfoObj.allPages
       }
       PlayerBus.emit('musicChange', musicInfo)
     })
     .catch((err) => {
       console.log(err)
+      console.log(123)
     })
 }
 

@@ -109,6 +109,7 @@ export default {
         },
         method: 'GET'
       })
+      // window.electronAPI.clearCache()
       SearchBus.emit('search', JSON.parse(result))
     },
     go(path) {
@@ -137,6 +138,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  overflow: hidden;
   color: #2c3e50;
   width: 100%;
   height: 100%;

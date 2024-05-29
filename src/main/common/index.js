@@ -6,7 +6,9 @@ export const biliApi = {
   GET_VIDEO_INFO_BY_BVID: 'https://api.bilibili.com/x/web-interface/view',
   GET_AUDIO_URL: 'https://api.bilibili.com/x/player/wbi/playurl', //fnval 为视频格式，这里使用dash格式
   GET_CID_BY_BVID: 'https://api.bilibili.com/x/player/pagelist',
-  GET_DETAIL_BY_BVID: 'https://api.bilibili.com/x/web-interface/wbi/view/detail'
+  GET_DETAIL_BY_BVID: 'https://api.bilibili.com/x/web-interface/wbi/view/detail',
+  GET_BGM_INFO_BY_MUSICID: 'https://api.bilibili.com/x/copyright-music-publicity/bgm/detail'
+
 }
 
 export let defaultHeaders = {

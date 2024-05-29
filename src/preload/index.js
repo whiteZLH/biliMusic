@@ -15,7 +15,8 @@ if (process.contextIsolated) {
       req: (data) => ipcRenderer.invoke('req', data),
       close: () => ipcRenderer.invoke('close'),
       min: () => ipcRenderer.invoke('min'),
-      getVideoInfo: (bvid) => ipcRenderer.invoke('getVideoInfo', bvid)
+      getVideoInfo: (bvid) => ipcRenderer.invoke('getVideoInfo', bvid),
+      clearCache: () => ipcRenderer.invoke('clearCache')
     })
   } catch (error) {
     console.error(error)

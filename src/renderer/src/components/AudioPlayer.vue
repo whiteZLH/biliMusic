@@ -10,6 +10,8 @@ const musicSrc = ref('https://music.163.com/song/media/outer/url?id=447925558.mp
 const audioRef = ref(null)
 // 当前音频是否可以播放
 const canPlay = ref(false)
+const lyricsWindowOpen = ref(false)
+const currentLyrics = ref('来播放音乐吧~~')
 const musicInfo = reactive({
   musicSrc: '',
   picUrl: '',
@@ -17,8 +19,11 @@ const musicInfo = reactive({
   plaintMusicTitle: '来播放音乐吧~~'
 })
 
+const currentPlayList = reactive([])
+
 const totalTimeStr = ref('0:00')
 const currentTimeStr = ref('0:00')
+let lyricsTimer
 
 const totalTime = ref(0)
 // 左边的时间， 在拖拽时成为目标时间，在真正audio 控件更新时，会同步被更新， 和 currentTimeStr 保持时间一致
@@ -30,6 +35,8 @@ const mouseRelease = ref(true)
 
 let mouseDownElement = ''
 let playIfCanplayImmediately = false
+
+const refPlayList = ref()
 // 判定单击的时间戳，上一次改变的时间
 // 监视当前进度条的进度，完成在进度条改变时对左边时间显示的改变
 watch(currentProcessPrecent, () => {
@@ -50,14 +57,14 @@ watch(currentProcessPrecent, () => {
   const targetTime = (currentProcessPrecent.value * totalTime.value) / 100
   // 改变预期进度时间显示
   currentTimeStr.value = formatTime(targetTime)
-  // 此操作是为了保证和Str的一致，并无实用
+  // 当前currentTime和Str不一致，currentTime 用来进行歌词展示
   currentTime.value = targetTime
 })
 // 单击改变时的逻辑，分开无法代替
 const changeProcess = (precent) => {
   // 拖拽状态下不执行
   if (!mouseRelease.value) return
-  console.log(parseInt((precent * 10 * totalTime.value) / 1000 + ''))
+  // console.log(parseInt((precent * 10 * totalTime.value) / 1000 + ''))
   audioRef.value.currentTime = parseInt((precent * 10 * totalTime.value) / 1000 + '')
 }
 
@@ -81,31 +88,61 @@ const startChangeProcess = () => {
   // // console.log(targetTime)
   // currentTimeStr.value = formatTime(targetTime)
 }
-const endChangeProcess = (e) => {
-  console.log(e.currentTarget)
-  console.log('单击触发了 mouseup')
-  console.log(mouseDownElement)
+const endChangeProcess = () => {
+  // console.log(e.currentTarget)
+  // console.log('单击触发了 mouseup')
+  // console.log(mouseDownElement)
   if (typeof mouseDownElement !== 'string' || !mouseDownElement.includes('arco-slider')) return
   // 判定元素 mousedown 是否在元素内被触发
   // 通过进度条获得目标时间
   mouseRelease.value = true
   const targetTime = (currentProcessPrecent.value * totalTime.value) / 100
   // console.log(targetTime)
-  console.log(audioRef.value)
   audioRef.value.currentTime = targetTime
 }
+
 const handleTimeUpdate = () => {
-  //
   currentTime.value = audioRef.value.currentTime
+  currentLyrics.value = findLyricsInCurrentTime(parseInt(currentTime.value * 1000 + ''))
+  // console.log(currentLyrics.value)
+  // 进度条没有拖动
   if (mouseRelease.value) {
     currentProcessPrecent.value = parseInt('' + (1000 * currentTime.value) / totalTime.value) / 10
     currentTimeStr.value = formatTime(currentTime.value)
   }
-  // TODO 计算当前的歌词 发送歌词变更事件， 发送给歌词窗口
+}
+
+// let lastLine = ''
+const findLyricsInCurrentTime = (time) => {
+  for (let i = 0; i < timeArr.length; i++) {
+    // if (time < timeArr[0].time) return timeArr[0].line
+    if (i === timeArr.length - 1) {
+      // lastLine = timeArr[i].line
+      return timeArr[i].line
+    }
+    if (time >= timeArr[i].time && time < timeArr[i + 1].time) {
+      // lastLine = timeArr[i].line
+      return timeArr[i].line
+    }
+  }
+  return '暂无歌词'
 }
 const recordMouseDownElement = (e) => {
   mouseDownElement = e.srcElement.className
   // console.log(mouseDownElement)
+}
+
+const handleLyricsOpen = () => {
+  // console.log(lyricsWindowOpen.value)
+  if (lyricsWindowOpen.value) {
+    // preload js 关闭窗口
+
+    lyricsWindowOpen.value = false
+  }
+  else {
+    // 打开窗口
+    lyricsWindowOpen.value = true
+  }
 }
 /////////////////////////////////////////
 onMounted(() => {
@@ -156,11 +193,20 @@ const startPause = () => {
   audioRef.value.pause()
 }
 const changeMusicInfo = (targetMusicInfo) => {
+  if (lyricsTimer) lyricsTimer.clear()
   // 静态方法将一个或者多个源对象中所有可枚举的自有属性复制到目标对象，并返回修改后的目标对象。
   // 动态页面直接改变了
   Object.assign(musicInfo, targetMusicInfo)
   // 改变音乐播放
   changeMusicSrc(musicInfo.musicSrc)
+  // 进行歌词的处理
+  // 载入解析歌词
+  loadLyricsText(musicInfo.musicLyrics)
+  // 当前的播放列表
+  currentPlayList.splice(0, currentPlayList.length)
+  Object.assign(currentPlayList, targetMusicInfo.allPages)
+  console.log(targetMusicInfo.allPages)
+  console.log(currentPlayList)
 }
 const changeMusicSrc = (targetMusicSrc) => {
   canPlay.value = false
@@ -190,6 +236,10 @@ const dislikeSong = () => {
   songsLike.value = false
 }
 
+const showOrNotPlayList = () => {
+  if (refPlayList.value.className === '') refPlayList.value.className = 'show'
+  else refPlayList.value.className = ''
+}
 import {
   PlayOnce,
   PlayCycle,
@@ -206,6 +256,8 @@ import {
 } from '@icon-park/vue-next'
 import { PlayerBus } from '../Events'
 import { formatTime } from '../utils'
+import { loadLyricsText, timeArr } from '../lyrics'
+import PlayList from './PlayList.vue'
 </script>
 
 <template>
@@ -217,7 +269,7 @@ import { formatTime } from '../utils'
     </div>
     <div class="music-info">
       <div class="title only-one-line">{{ musicInfo.plaintMusicTitle }}</div>
-      <div class="lyrics only-one-line">我的眼中常含泪水，因为我对这片土地爱的深沉</div>
+      <div class="lyrics only-one-line">{{ currentLyrics }}</div>
     </div>
     <div class="process-bar">
       <div class="process-bar-text">{{ currentTimeStr }}</div>
@@ -276,8 +328,9 @@ import { formatTime } from '../utils'
         stroke-linecap="square"
         @click="likeSong"
       />
-      <span class="option-button">词</span>
+      <span class="option-button lyrics-button" :class="lyricsWindowOpen ? 'active':''" @click="handleLyricsOpen">词</span>
 
+      <!--      播放模式，弹窗-->
       <a-popover
         class="popover"
         :content-style="{ padding: 0 }"
@@ -360,7 +413,7 @@ import { formatTime } from '../utils'
           </a-list>
         </template>
       </a-popover>
-
+      <!--下一首-->
       <arrow-circle-left
         class="option-button"
         theme="two-tone"
@@ -398,6 +451,7 @@ import { formatTime } from '../utils'
         stroke-linejoin="miter"
         stroke-linecap="square"
       />
+      <!--      播放列表-->
       <music-list
         class="option-button"
         theme="two-tone"
@@ -405,7 +459,10 @@ import { formatTime } from '../utils'
         :fill="['#333', '#f4f']"
         stroke-linejoin="miter"
         stroke-linecap="square"
+        @click="showOrNotPlayList"
       />
+      <!--      TODO 实现播放列表-->
+      <play-list ref="refPlayList" :height="795" :width="400" :data="currentPlayList" />
     </div>
   </div>
 </template>
@@ -455,7 +512,6 @@ import { formatTime } from '../utils'
       padding: 10px 0 0 0;
       font-size: 18px;
       font-weight: 700;
-
     }
   }
   .process-bar {
@@ -514,6 +570,34 @@ import { formatTime } from '../utils'
       display: flex;
       align-items: center;
     }
+    .play-list {
+      position: absolute;
+      right: -400px;
+      bottom: 85px;
+    }
+    .play-list.show {
+      animation: show 0.3s ease-out infinite;
+      animation-iteration-count: 1;
+      animation-fill-mode: forwards; /*让动画停留在最后一帧 */
+    }
+    @keyframes show {
+      0% {
+        right: -400px;
+        opacity: 0.3;
+      }
+      100% {
+        right: 0;
+        opacity: 1;
+      }
+    }
+  }
+  .lyrics-button {
+    font-size: 18px;
+    font-weight: 500;
+    font-family: 'Microsoft YaHei UI', ui-sans-serif;
+  }
+  .lyrics-button.active {
+    color: #00aeec;
   }
 }
 </style>
