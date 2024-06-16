@@ -4,3 +4,5 @@ export const PlayerBus = new mitt()
 
 // 创建多个事件总线，互不干扰。
 export const SearchBus = new mitt()
+// 歌词窗口事件
+export const LyricsWindowBus = new mitt()

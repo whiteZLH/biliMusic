@@ -63,6 +63,11 @@ const formatDate = (timestamp) => {
 
 const data = reactive({})
 const total = ref(0)
+const formatVideoPic = (url) => {
+  const result = url.replace('//', 'https://')
+  console.log(result)
+  return result
+}
 </script>
 <template>
   <div class="search-view">
@@ -73,7 +78,7 @@ const total = ref(0)
           <a-image
             :width="240"
             :height="140"
-            :src="video.pic"
+            :src="formatVideoPic(video.pic)"
             :show-loader="true"
             :preview="false"
           ></a-image>

@@ -2,6 +2,9 @@ import { paramToGetUrl } from '../../utils'
 import { biliApi, defaultHeaders } from '../../common'
 import { mainWindow } from '../../index'
 import { search, getLyricsBySongId } from '../../qqmusic'
+import { is } from '@electron-toolkit/utils'
+import { join } from 'path'
+import fs from 'fs'
 // import { webFrame } from 'electron'
 const { webFrame } = require('electron')
 
@@ -67,6 +70,11 @@ export async function getVideoInfo(e, bvid) {
       musicName = tag.tag_name
     }
   }
+  if (musicName === '') {
+    let start = musicName.search('《')
+    let end = musicName.search('》')
+    if (start !== -1 && end !== -1) musicName.substring(start, end)
+  }
   // console.log(musicId)
   // 如果成功获得了musicId，请求music信息
   if (musicId) {
@@ -79,11 +87,17 @@ export async function getVideoInfo(e, bvid) {
     const musicInfoObj = JSON.parse(musicInfo)
     musicName = musicInfoObj.data.music_title
     musicOriginArtist = musicInfoObj.data.origin_artist
+  } else {
+    console.log('===================')
+    musicName = plaintTitle
   }
 
   //TODO 是否需要进行改变 进行歌词匹配 ? 当前是异步还是同步，
   // 进行歌词的匹配
+  console.log(musicName)
   const musicInfos = await search(musicName)
+  console.log(musicInfos)
+  console.log('-------------------')
 
   let songId
   // 优先匹配title 寻找最为匹配的歌曲
@@ -95,9 +109,9 @@ export async function getVideoInfo(e, bvid) {
     }
   }
   let lyrics
-  // console.log(songId)
   // 找到了歌曲
   if (!songId) {
+    console.log(musicInfos)
     songId = musicInfos[0].songId
   }
   lyrics = await getLyricsBySongId(songId)
@@ -135,4 +149,14 @@ export async function getVideoInfo(e, bvid) {
 
 export function clearCache() {
   webFrame.clearCache()
+}
+
+export const openLyricsWindow = async () => {}
+
+export const getPathAndUrl = () => {
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    return process.env['ELECTRON_RENDERER_URL'] + '/rendererLyrics/'
+  } else {
+    return join(__dirname, '../renderer/rendererLyrics/index.html')
+  }
 }

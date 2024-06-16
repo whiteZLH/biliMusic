@@ -1,9 +1,11 @@
-import { app, shell, BrowserWindow, ipcMain, session } from 'electron'
+import { app, BrowserWindow, ipcMain, session } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { initSetting } from './Init'
 import { registerEvents } from './register'
+import { registerLyricsEvents } from './lyrics-main/register'
+import * as fs from 'fs'
 
 export let mainWindow
 
@@ -27,17 +29,41 @@ function createWindow() {
     mainWindow.show()
   })
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
+  // mainWindow.webContents.setWindowOpenHandler((details) => {
+  //   shell.openExternal(details.url)
+  //   return { action: 'deny' }
+  // })
+  let first = true
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (first) {
+      registerLyricsEvents()
+      first = false
+    }
+    // if (url === 'about:blank') {
+    return {
+      action: 'allow',
+      overrideBrowserWindowOptions: {
+        title: 'lyrics',
+        frame: false,
+        minHeight: 60,
+        fullscreenable: false,
+        transparent: true,
+        skipTaskbar: true,
+        // backgroundColor: 'black',
+        webPreferences: {
+          preload: join(__dirname, '../preload/lyrics.js')
+        }
+      }
+    }
   })
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'] + '/renderer/')
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+
+    mainWindow.loadFile(join(__dirname, '../renderer/renderer/index.html'))
   }
 }
 
@@ -46,7 +72,7 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('top.shadowzlh')
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -69,6 +95,8 @@ app.whenReady().then(() => {
   // 进行ipc事件注册
   registerEvents()
   createWindow()
+  // createLyricsWindow()
+  mainWindow.webContents.openDevTools()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

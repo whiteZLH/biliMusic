@@ -14,7 +14,6 @@ const props = defineProps({
 let itemRefs = []
 const setItemRef = (el) => {
   if (!el) return
-  console.log(el)
   itemRefs.push(el)
 }
 
@@ -34,7 +33,6 @@ let updateStatus = []
 
 watch(props.data, () => {
   updateStatus = []
-
 })
 onUpdated(() => {
   console.log(itemRefs, '====')

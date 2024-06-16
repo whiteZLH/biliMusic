@@ -1,5 +1,25 @@
 <script setup>
 import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import {
+  PlayOnce,
+  PlayCycle,
+  ShuffleOne,
+  SortOne,
+  Like,
+  VolumeNotice,
+  VolumeMute,
+  Play,
+  PauseOne,
+  ArrowCircleLeft,
+  ArrowCircleRight,
+  MusicList,
+  DocSearchTwo
+} from '@icon-park/vue-next'
+import { PlayerBus } from '../Events'
+import { formatTime } from '../utils'
+import { loadLyricsText, timeArr } from '../lyrics'
+import PlayList from './PlayList.vue'
+// 导入结束
 // TODO 加入声音的淡入淡出
 const volume = ref(true)
 const songsLike = ref(false)
@@ -26,7 +46,7 @@ const currentTimeStr = ref('0:00')
 let lyricsTimer
 
 const totalTime = ref(0)
-// 左边的时间， 在拖拽时成为目标时间，在真正audio 控件更新时，会同步被更新， 和 currentTimeStr 保持时间一致
+// 左边的时间， 在拖拽时成为目标时间，在真正audio 控件更新时，会同步被更新
 const currentTime = ref(0)
 // 用来同步进度条 其实是 34.6 这样后面有一位小数，来保证进度条的平滑推进
 const currentProcessPrecent = ref(0)
@@ -36,6 +56,43 @@ const mouseRelease = ref(true)
 let mouseDownElement = ''
 let playIfCanplayImmediately = false
 
+const musicListFill = ref('#333')
+onMounted(() => {
+  // 解决 mouseup 时不在元素上，导致不生效的问题，解决办法: 扩大对象范围
+  // 新问题: 会导致在document 随便位置单击时出现停顿，根本原因是在设置时间时间不对，在计算时舍去了部分时间
+  // 解决办法: 判定 mousedown 是否在元素内被触发, 记录上一次 mousedown 的地方
+  window.addEventListener('mouseup', endChangeProcess)
+  window.addEventListener('mousedown', recordMouseDownElement)
+  // this.$once('hook:beforeDestroy', () => {
+  //   window.removeEventListener('mouseup', endChangeProcess)
+  // })
+  // 更改是否可以播放
+  audioRef.value.addEventListener('canplay', () => {
+    canPlay.value = true
+    if (playIfCanplayImmediately) {
+      startPlay()
+      playIfCanplayImmediately = false
+    }
+  })
+  audioRef.value.addEventListener('loadedmetadata', () => {
+    totalTime.value = audioRef.value.duration
+    totalTimeStr.value = formatTime(totalTime.value)
+  })
+
+  audioRef.value.addEventListener('ended', playNext)
+
+  // 注册事件
+  PlayerBus.on('musicChange', changeMusicInfo)
+  //
+  window.addEventListener('message', handleLyricsOpen)
+})
+onUnmounted(() => {
+  // 卸载
+  window.removeEventListener('mouseup', endChangeProcess)
+  window.removeEventListener('mousedown', recordMouseDownElement)
+  PlayerBus.off('musicChange', changeMusicInfo)
+  window.removeEventListener('windowClose', handleLyricsOpen)
+})
 const refPlayList = ref()
 // 判定单击的时间戳，上一次改变的时间
 // 监视当前进度条的进度，完成在进度条改变时对左边时间显示的改变
@@ -101,9 +158,16 @@ const endChangeProcess = () => {
   audioRef.value.currentTime = targetTime
 }
 
-const handleTimeUpdate = () => {
+// 更新歌词
+const updateLyricsLine = () => {
   currentTime.value = audioRef.value.currentTime
   currentLyrics.value = findLyricsInCurrentTime(parseInt(currentTime.value * 1000 + ''))
+  if (childWindow) {
+    childWindow.postMessage(currentLyrics.value)
+  }
+}
+const handleTimeUpdate = () => {
+  updateLyricsLine()
   // console.log(currentLyrics.value)
   // 进度条没有拖动
   if (mouseRelease.value) {
@@ -132,50 +196,40 @@ const recordMouseDownElement = (e) => {
   // console.log(mouseDownElement)
 }
 
+let childWindow
+
 const handleLyricsOpen = () => {
+  console.log(123)
   // console.log(lyricsWindowOpen.value)
   if (lyricsWindowOpen.value) {
     // preload js 关闭窗口
-
     lyricsWindowOpen.value = false
-  }
-  else {
+    if (childWindow) childWindow.close()
+  } else {
     // 打开窗口
     lyricsWindowOpen.value = true
+    // 判断环境
+
+    // if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    // childWindow = window.open(process.env['ELECTRON_RENDERER_URL'] + '/rendererLyrics/')
+    // childWindow = window.open(
+    //   ' http://localhost:5173/rendererLyrics/index.html',
+    //   '_blank',
+    //   'top=200,left=200,frame=false,height=100,width=400'
+    // )
+    // 本地打包
+    window.electronAPI.getPathAndUrl().then((url) => {
+      childWindow = window.open(url, '_blank', 'top=200,left=200,frame=false,height=100,width=400')
+    })
+    // } else {
+    //   childWindow = window.open(join('../rendererLyrics/lyricsIndex.html'))
+    // }
+
+    // childWindow.document.write('<h1>Hello</h1>')
   }
 }
 /////////////////////////////////////////
-onMounted(() => {
-  // 解决 mouseup 时不在元素上，导致不生效的问题，解决办法: 扩大对象范围
-  // 新问题: 会导致在document 随便位置单击时出现停顿，根本原因是在设置时间时间不对，在计算时舍去了部分时间
-  // 解决办法: 判定 mousedown 是否在元素内被触发, 记录上一次 mousedown 的地方
-  window.addEventListener('mouseup', endChangeProcess)
-  window.addEventListener('mousedown', recordMouseDownElement)
-  // this.$once('hook:beforeDestroy', () => {
-  //   window.removeEventListener('mouseup', endChangeProcess)
-  // })
-  // 更改是否可以播放
-  audioRef.value.addEventListener('canplay', () => {
-    canPlay.value = true
-    if (playIfCanplayImmediately) {
-      startPlay()
-      playIfCanplayImmediately = false
-    }
-  })
-  audioRef.value.addEventListener('loadedmetadata', () => {
-    totalTime.value = audioRef.value.duration
-    totalTimeStr.value = formatTime(totalTime.value)
-  })
 
-  audioRef.value.addEventListener('ended', playNext)
-
-  // 注册事件
-  PlayerBus.on('musicChange', changeMusicInfo)
-})
-onUnmounted(() => {
-  // 卸载
-  PlayerBus.off('musicChange', changeMusicInfo)
-})
 const changePlayMode = (event, targetPlayMode) => {
   playMode.value = targetPlayMode
 }
@@ -237,34 +291,26 @@ const dislikeSong = () => {
 }
 
 const showOrNotPlayList = () => {
-  if (refPlayList.value.className === '') refPlayList.value.className = 'show'
-  else refPlayList.value.className = ''
+  if (refPlayList.value.className === '') {
+    refPlayList.value.className = 'show'
+    musicListFill.value = '#00aeec'
+  } else {
+    refPlayList.value.className = ''
+    musicListFill.value = '#333'
+  }
 }
-import {
-  PlayOnce,
-  PlayCycle,
-  ShuffleOne,
-  SortOne,
-  Like,
-  VolumeNotice,
-  VolumeMute,
-  Play,
-  PauseOne,
-  ArrowCircleLeft,
-  ArrowCircleRight,
-  MusicList
-} from '@icon-park/vue-next'
-import { PlayerBus } from '../Events'
-import { formatTime } from '../utils'
-import { loadLyricsText, timeArr } from '../lyrics'
-import PlayList from './PlayList.vue'
+const formatVideoPic = (url) => {
+  const result = url.replace('//', 'https://')
+  console.log(result)
+  return result
+}
 </script>
 
 <template>
   <div class="audio-player">
     <div class="player-cover">
       <div class="cover">
-        <img class="cover-img" :src="musicInfo.picUrl" alt="图片加载失败" />
+        <img class="cover-img" :src="formatVideoPic(musicInfo.picUrl)" alt="图片加载失败" />
       </div>
     </div>
     <div class="music-info">
@@ -328,7 +374,12 @@ import PlayList from './PlayList.vue'
         stroke-linecap="square"
         @click="likeSong"
       />
-      <span class="option-button lyrics-button" :class="lyricsWindowOpen ? 'active':''" @click="handleLyricsOpen">词</span>
+      <span
+        class="option-button lyrics-button"
+        :class="lyricsWindowOpen ? 'active' : ''"
+        @click="handleLyricsOpen"
+        >词</span
+      >
 
       <!--      播放模式，弹窗-->
       <a-popover
@@ -456,13 +507,22 @@ import PlayList from './PlayList.vue'
         class="option-button"
         theme="two-tone"
         size="24"
-        :fill="['#333', '#f4f']"
+        :fill="musicListFill"
         stroke-linejoin="miter"
         stroke-linecap="square"
         @click="showOrNotPlayList"
       />
       <!--      TODO 实现播放列表-->
       <play-list ref="refPlayList" :height="795" :width="400" :data="currentPlayList" />
+      <!--      TODO 歌词选择-->
+      <doc-search-two
+        theme="two-tone"
+        size="24"
+        :fill="['#d0021b', '#7ed321']"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+      />
+      <!--      TODO 进行歌词进度匹配-->
     </div>
   </div>
 </template>

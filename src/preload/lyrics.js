@@ -12,13 +12,10 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('electronAPI', {
-      req: (data) => ipcRenderer.invoke('req', data),
-      close: () => ipcRenderer.invoke('close'),
-      min: () => ipcRenderer.invoke('min'),
-      getVideoInfo: (bvid) => ipcRenderer.invoke('getVideoInfo', bvid),
-      clearCache: () => ipcRenderer.invoke('clearCache'),
-      openLyricsWindow: () => ipcRenderer.invoke('openLyricsWindow'),
-      getPathAndUrl: () => ipcRenderer.invoke('getPathAndUrl')
+      move: (x, y, w, h) => ipcRenderer.invoke('move', x, y, w, h),
+      closeWindow: () => ipcRenderer.invoke('closeWindow'),
+      alwaysTop: (targetTop) => ipcRenderer.invoke('alwaysTop', targetTop),
+      IgnoreMouseEvents: () => ipcRenderer.invoke('IgnoreMouseEvents')
     })
   } catch (error) {
     console.error(error)
