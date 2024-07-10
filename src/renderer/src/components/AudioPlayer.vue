@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import {
   PlayOnce,
   PlayCycle,
@@ -13,12 +13,14 @@ import {
   ArrowCircleLeft,
   ArrowCircleRight,
   MusicList,
-  DocSearchTwo
+  DocSearchTwo,
+  SoundWave
 } from '@icon-park/vue-next'
-import { PlayerBus } from '../Events'
+import { MusicProgress, PlayerBus } from '../Events'
 import { formatTime } from '../utils'
 import { loadLyricsText, timeArr } from '../lyrics'
 import PlayList from './PlayList.vue'
+import LyricsTimeAlign from './lyrics/LyricsTimeAlign.vue'
 // 导入结束
 // TODO 加入声音的淡入淡出
 const volume = ref(true)
@@ -83,6 +85,7 @@ onMounted(() => {
 
   // 注册事件
   PlayerBus.on('musicChange', changeMusicInfo)
+  MusicProgress.on('musicProgress', getMusicProgress)
   //
   window.addEventListener('message', handleLyricsOpen)
 })
@@ -91,6 +94,7 @@ onUnmounted(() => {
   window.removeEventListener('mouseup', endChangeProcess)
   window.removeEventListener('mousedown', recordMouseDownElement)
   PlayerBus.off('musicChange', changeMusicInfo)
+  MusicProgress.off('musicProgress', getMusicProgress)
   window.removeEventListener('windowClose', handleLyricsOpen)
 })
 const refPlayList = ref()
@@ -161,7 +165,9 @@ const endChangeProcess = () => {
 // 更新歌词
 const updateLyricsLine = () => {
   currentTime.value = audioRef.value.currentTime
-  currentLyrics.value = findLyricsInCurrentTime(parseInt(currentTime.value * 1000 + ''))
+  const time = audioRef.value.currentTime
+  currentLyrics.value = findLyricsInCurrentTime(parseInt(time * 1000 + ''))
+  // 给子窗口发送消息，同步当前歌词
   if (childWindow) {
     childWindow.postMessage(currentLyrics.value)
   }
@@ -172,6 +178,7 @@ const handleTimeUpdate = () => {
   // 进度条没有拖动
   if (mouseRelease.value) {
     currentProcessPrecent.value = parseInt('' + (1000 * currentTime.value) / totalTime.value) / 10
+    currentTime.value = audioRef.value.currentTime
     currentTimeStr.value = formatTime(currentTime.value)
   }
 }
@@ -199,7 +206,6 @@ const recordMouseDownElement = (e) => {
 let childWindow
 
 const handleLyricsOpen = () => {
-  console.log(123)
   // console.log(lyricsWindowOpen.value)
   if (lyricsWindowOpen.value) {
     // preload js 关闭窗口
@@ -299,10 +305,23 @@ const showOrNotPlayList = () => {
     musicListFill.value = '#333'
   }
 }
-const formatVideoPic = (url) => {
-  const result = url.replace('//', 'https://')
-  console.log(result)
-  return result
+const formatVideoPic = computed(() => {
+  return function (url) {
+    const result = url.replace('//', 'https://')
+    console.log(musicInfo)
+    console.log(result)
+    return result
+  }
+})
+
+const dialogType = ref('lyricsTime')
+const dialogVisible = ref(false)
+const openDialog = (type) => {
+  dialogType.value = type
+  dialogVisible.value = true
+}
+const getMusicProgress = () => {
+  return currentTime
 }
 </script>
 
@@ -334,6 +353,27 @@ const formatVideoPic = (url) => {
       <audio ref="audioRef" :src="musicSrc" @timeupdate="handleTimeUpdate" />
     </div>
     <div class="options">
+      <!--      TODO 歌词选择-->
+      <doc-search-two
+        class="option-button"
+        theme="two-tone"
+        size="24"
+        :fill="['#333', '']"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+        title="歌词搜索"
+      />
+      <!--      TODO 进行歌词进度匹配-->
+      <sound-wave
+        class="option-button"
+        theme="two-tone"
+        size="24"
+        :fill="['#333', '']"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+        title="歌词进度调整"
+        @click="openDialog('lyricsTime')"
+      />
       <volume-notice
         v-if="volume"
         class="option-button"
@@ -342,6 +382,7 @@ const formatVideoPic = (url) => {
         :fill="['#333', '']"
         stroke-linejoin="miter"
         stroke-linecap="square"
+        title="音量"
         @click="mute(true)"
       />
       <volume-mute
@@ -352,6 +393,7 @@ const formatVideoPic = (url) => {
         :fill="['#333', '']"
         stroke-linejoin="miter"
         stroke-linecap="square"
+        title="静音"
         @click="mute(false)"
       />
       <like
@@ -362,6 +404,7 @@ const formatVideoPic = (url) => {
         :fill="['#ff6a6a', '#ff6a6a']"
         stroke-linejoin="miter"
         stroke-linecap="square"
+        title="不喜欢"
         @click="dislikeSong"
       />
       <like
@@ -372,10 +415,12 @@ const formatVideoPic = (url) => {
         :fill="['#333', '']"
         stroke-linejoin="miter"
         stroke-linecap="square"
+        title="喜欢"
         @click="likeSong"
       />
       <span
         class="option-button lyrics-button"
+        title="歌词窗口"
         :class="lyricsWindowOpen ? 'active' : ''"
         @click="handleLyricsOpen"
         >词</span
@@ -471,6 +516,7 @@ const formatVideoPic = (url) => {
         size="24"
         :fill="['#333', '']"
         stroke-linejoin="miter"
+        title="上一首"
         stroke-linecap="square"
       />
       <!--      !playStatus 默认为true 当前没有在播放，-->
@@ -482,6 +528,7 @@ const formatVideoPic = (url) => {
         :fill="['#333', '']"
         stroke-linejoin="miter"
         stroke-linecap="square"
+        title="播放"
         @click="startPlay"
       />
       <pause-one
@@ -492,6 +539,7 @@ const formatVideoPic = (url) => {
         :fill="['#333', '']"
         stroke-linejoin="miter"
         stroke-linecap="square"
+        title="暂停"
         @click="startPause"
       />
       <arrow-circle-right
@@ -500,6 +548,7 @@ const formatVideoPic = (url) => {
         size="24"
         :fill="['#333', '']"
         stroke-linejoin="miter"
+        title="下一首"
         stroke-linecap="square"
       />
       <!--      播放列表-->
@@ -510,20 +559,26 @@ const formatVideoPic = (url) => {
         :fill="musicListFill"
         stroke-linejoin="miter"
         stroke-linecap="square"
+        title="播放列表"
         @click="showOrNotPlayList"
       />
-      <!--      TODO 实现播放列表-->
+      <!--      TODO 实现播放列表 ，点击进行播放及实现喜欢列表等-->
       <play-list ref="refPlayList" :height="795" :width="400" :data="currentPlayList" />
-      <!--      TODO 歌词选择-->
-      <doc-search-two
-        theme="two-tone"
-        size="24"
-        :fill="['#d0021b', '#7ed321']"
-        stroke-linejoin="miter"
-        stroke-linecap="square"
-      />
-      <!--      TODO 进行歌词进度匹配-->
     </div>
+    <!--    歌词弹窗-->
+    <a-modal
+      v-model:visible="dialogVisible"
+      :width="1000"
+      ok-text="完成更改"
+      draggable
+      hide-title
+      hide-cancel
+      simple
+    >
+      <!--      歌词时间匹配 进行 currentTime 传递会导致重绘?// TODO 使用事件机制进行通信-->
+      <lyrics-time-align v-if="dialogType === 'lyricsTime'" :lyrics-arr="timeArr" />
+      <!--      歌词搜索-->
+    </a-modal>
   </div>
 </template>
 

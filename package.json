@@ -1,5 +1,5 @@
 {
-  "name": "bili-music",
+  "name": "bili-music-dev",
   "version": "1.0.0",
   "description": "New Way To Listen Music!!!",
   "main": "./out/main/index.js",
@@ -24,8 +24,11 @@
     "crypto-js": "^4.2.0",
     "electron-updater": "^6.1.7",
     "mitt": "^3.0.1",
+    "node-text-to-png": "^0.0.9",
     "request": "^2.88.2",
-    "request-promise": "^4.2.6"
+    "request-promise": "^4.2.6",
+    "sharp": "^0.33.4",
+    "text-to-svg": "^3.1.5"
   },
   "devDependencies": {
     "@arco-design/web-vue": "^2.55.2",

@@ -38,6 +38,7 @@ export async function getVideoInfo(e, bvid) {
   })
 
   let resultObj = JSON.parse(result)
+  // console.log(result)
   // 视频的cid
   const cid = resultObj.data.View.cid
   // 视频的 title
@@ -109,9 +110,8 @@ export async function getVideoInfo(e, bvid) {
     }
   }
   let lyrics
-  // 找到了歌曲
-  if (!songId) {
-    console.log(musicInfos)
+  // 找到了歌曲信息，但没有完全匹配的歌曲信息，默认选择第一个
+  if (!songId && musicInfos.length) {
     songId = musicInfos[0].songId
   }
   lyrics = await getLyricsBySongId(songId)

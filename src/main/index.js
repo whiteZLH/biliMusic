@@ -1,11 +1,10 @@
-import { app, BrowserWindow, ipcMain, session } from 'electron'
+import { app, BrowserWindow, ipcMain, session, Tray, Menu } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+// import icon from ''
 import { initSetting } from './Init'
 import { registerEvents } from './register'
 import { registerLyricsEvents } from './lyrics-main/register'
-import * as fs from 'fs'
 
 export let mainWindow
 
@@ -18,7 +17,7 @@ function createWindow() {
     autoHideMenuBar: true,
     frame: false,
     resizable: false,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    icon: join(__dirname, '../../resources/icon.png'),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -34,7 +33,7 @@ function createWindow() {
   //   return { action: 'deny' }
   // })
   let first = true
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+  mainWindow.webContents.setWindowOpenHandler(() => {
     if (first) {
       registerLyricsEvents()
       first = false
@@ -62,11 +61,11 @@ function createWindow() {
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'] + '/renderer/')
   } else {
-
     mainWindow.loadFile(join(__dirname, '../renderer/renderer/index.html'))
   }
 }
 
+let tray
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -95,8 +94,20 @@ app.whenReady().then(() => {
   // 进行ipc事件注册
   registerEvents()
   createWindow()
+  // 注册托盘 Tray
+  const trayIcon = join(__dirname, '../../resources/icon.png')
+  tray = new Tray(trayIcon)
+  const contextMenu = Menu.buildFromTemplate([
+    { label: '打开biliMusic' },
+    { label: '退出应用' },
+  ])
+
+  tray.setContextMenu(contextMenu)
+
+  tray.setToolTip('BiliMusic')
+  tray.setTitle('BiliMusic')
   // createLyricsWindow()
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

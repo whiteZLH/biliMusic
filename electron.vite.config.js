@@ -7,6 +7,7 @@ export default {
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'src/main/index.js'),
+          fonts: resolve(__dirname, 'src/main/fonts/SourceHanSansSC-Normal.ttf')
         }
       }
     }
