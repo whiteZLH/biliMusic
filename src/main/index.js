@@ -93,14 +93,13 @@ app.whenReady().then(() => {
   initSetting()
   // 进行ipc事件注册
   registerEvents()
+
+
   createWindow()
   // 注册托盘 Tray
   const trayIcon = join(__dirname, '../../resources/icon.png')
   tray = new Tray(trayIcon)
-  const contextMenu = Menu.buildFromTemplate([
-    { label: '打开biliMusic' },
-    { label: '退出应用' },
-  ])
+  const contextMenu = Menu.buildFromTemplate([{ label: '打开biliMusic' }, { label: '退出应用' }])
 
   tray.setContextMenu(contextMenu)
 

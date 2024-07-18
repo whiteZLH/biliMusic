@@ -16,9 +16,9 @@ import {
   DocSearchTwo,
   SoundWave
 } from '@icon-park/vue-next'
-import { MusicProgress, PlayerBus } from '../Events'
+import { MusicProgressBus, PlayerBus } from '../Events'
 import { formatTime } from '../utils'
-import { loadLyricsText, timeArr } from '../lyrics'
+import { loadLyricsText, timeArr, info } from '../lyrics'
 import PlayList from './PlayList.vue'
 import LyricsTimeAlign from './lyrics/LyricsTimeAlign.vue'
 // 导入结束
@@ -59,6 +59,40 @@ let mouseDownElement = ''
 let playIfCanplayImmediately = false
 
 const musicListFill = ref('#333')
+
+const adjustLyricsTime = (timeDiff) => {
+  console.log(timeDiff)
+  // 暂停
+  startPause()
+  // 获得当前的offset
+  if (info['offset']) {
+    console.log('in')
+    timeDiff = info['offset'] + timeDiff
+  }
+  // qq 音乐
+  // 调整
+  // 重新加载歌词文件
+  // console.log(timeArr)
+  changeLyricsOffset(timeDiff)
+  // console.log(timeArr)
+  // 保存
+  // TODO sqlite3
+  saveLyricsTimeToDb(musicInfo.bvid, musicInfo.cid, musicInfo.qqSongId, timeDiff)
+  // 开始播放
+  startPlay()
+}
+const saveLyricsTimeToDb = (bvid, cid, songId, timeDiff) => {
+  // 调用主线程
+  window.electronAPI.saveLyricsTimeToDb(bvid, cid, songId, timeDiff)
+}
+const changeLyricsOffset = (timeDiff) => {
+  // timeArr.forEach((e) => {
+  //   e.time = e.time - timeDiff
+  // })
+  for (let i = 0; i < timeArr.length; i++) {
+    timeArr[i].time = timeArr[i].time - timeDiff
+  }
+}
 onMounted(() => {
   // 解决 mouseup 时不在元素上，导致不生效的问题，解决办法: 扩大对象范围
   // 新问题: 会导致在document 随便位置单击时出现停顿，根本原因是在设置时间时间不对，在计算时舍去了部分时间
@@ -85,16 +119,16 @@ onMounted(() => {
 
   // 注册事件
   PlayerBus.on('musicChange', changeMusicInfo)
-  MusicProgress.on('musicProgress', getMusicProgress)
   //
   window.addEventListener('message', handleLyricsOpen)
+  // 歌词事件对齐
+  MusicProgressBus.on('lyricsAlignMatch', adjustLyricsTime)
 })
 onUnmounted(() => {
   // 卸载
   window.removeEventListener('mouseup', endChangeProcess)
   window.removeEventListener('mousedown', recordMouseDownElement)
   PlayerBus.off('musicChange', changeMusicInfo)
-  MusicProgress.off('musicProgress', getMusicProgress)
   window.removeEventListener('windowClose', handleLyricsOpen)
 })
 const refPlayList = ref()
@@ -192,6 +226,7 @@ const findLyricsInCurrentTime = (time) => {
       return timeArr[i].line
     }
     if (time >= timeArr[i].time && time < timeArr[i + 1].time) {
+      // console.log(timeArr[i].time, timeArr[i].line)
       // lastLine = timeArr[i].line
       return timeArr[i].line
     }
@@ -252,6 +287,20 @@ const startPause = () => {
   playStatus.value = false
   audioRef.value.pause()
 }
+/**
+ *       targetMusicInfo = {
+ *         musicSrc: musicUrl,
+ *         picUrl: pic,
+ *         musicTitle: title,
+ *         plaintMusicTitle: videoInfoObj.plaintTitle,
+ *         cid: videoInfoObj.cid,
+ *         musicName: videoInfoObj.musicName,
+ *         musicOriginArtist: videoInfoObj.musicOriginArtist,
+ *         musicLyrics: videoInfoObj.lyrics,
+ *         allPages: videoInfoObj.allPages
+ *       }
+ * @param targetMusicInfo
+ */
 const changeMusicInfo = (targetMusicInfo) => {
   if (lyricsTimer) lyricsTimer.clear()
   // 静态方法将一个或者多个源对象中所有可枚举的自有属性复制到目标对象，并返回修改后的目标对象。
@@ -265,8 +314,6 @@ const changeMusicInfo = (targetMusicInfo) => {
   // 当前的播放列表
   currentPlayList.splice(0, currentPlayList.length)
   Object.assign(currentPlayList, targetMusicInfo.allPages)
-  console.log(targetMusicInfo.allPages)
-  console.log(currentPlayList)
 }
 const changeMusicSrc = (targetMusicSrc) => {
   canPlay.value = false
@@ -308,8 +355,8 @@ const showOrNotPlayList = () => {
 const formatVideoPic = computed(() => {
   return function (url) {
     const result = url.replace('//', 'https://')
-    console.log(musicInfo)
-    console.log(result)
+    // console.log(musicInfo)
+    // console.log(result)
     return result
   }
 })
@@ -319,9 +366,6 @@ const dialogVisible = ref(false)
 const openDialog = (type) => {
   dialogType.value = type
   dialogVisible.value = true
-}
-const getMusicProgress = () => {
-  return currentTime
 }
 </script>
 
@@ -575,8 +619,12 @@ const getMusicProgress = () => {
       hide-cancel
       simple
     >
-      <!--      歌词时间匹配 进行 currentTime 传递会导致重绘?// TODO 使用事件机制进行通信-->
-      <lyrics-time-align v-if="dialogType === 'lyricsTime'" :lyrics-arr="timeArr" />
+      <!---->
+      <lyrics-time-align
+        v-if="dialogType === 'lyricsTime'"
+        :lyrics-arr="timeArr"
+        :music-progress="currentTime"
+      />
       <!--      歌词搜索-->
     </a-modal>
   </div>

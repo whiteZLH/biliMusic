@@ -1,7 +1,9 @@
 import { updateCookie } from '../common/'
 import { biliApi } from '../common'
+import { checkDatabase } from '../database'
 
 const request = require('request-promise')
+
 // 当前是使用axios 获得，在后面使用LocalStore 读取以前的配置
 function getCookie() {
   request(biliApi.HOME, { resolveWithFullResponse: true })
@@ -20,5 +22,8 @@ function getCookie() {
     })
 }
 export function initSetting() {
+  // 检测数据库
+  checkDatabase().then()
   getCookie()
 }
+// 检查数据库

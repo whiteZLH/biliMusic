@@ -4,12 +4,12 @@ import { mainWindow } from '../../index'
 import { search, getLyricsBySongId } from '../../qqmusic'
 import { is } from '@electron-toolkit/utils'
 import { join } from 'path'
-import fs from 'fs'
-// import { webFrame } from 'electron'
+import { insertLyricsTimeToDb, queryLyricsTimeAlign } from '../../database'
 const { webFrame } = require('electron')
 
 // TODO 加入异常控制
 const rp = require('request-promise')
+
 export async function req(e, data) {
   const url = paramToGetUrl(data.url, data.params)
   return await rp(url, {
@@ -43,6 +43,7 @@ export async function getVideoInfo(e, bvid) {
   const cid = resultObj.data.View.cid
   // 视频的 title
   const plaintTitle = resultObj.data.View.pages[0].part
+  // TODO 对信息的picUrl 进行更改，// -> https://
   // console.log(plaintTitle)
   // 获得视频所在分 p 的所有分p
   // 存在 分 p
@@ -95,6 +96,8 @@ export async function getVideoInfo(e, bvid) {
 
   //TODO 是否需要进行改变 进行歌词匹配 ? 当前是异步还是同步，
   // 进行歌词的匹配
+  // 优先进行数据库匹配, 查找以前保存的歌曲数据
+  //
   console.log(musicName)
   const musicInfos = await search(musicName)
   console.log(musicInfos)
@@ -114,7 +117,14 @@ export async function getVideoInfo(e, bvid) {
   if (!songId && musicInfos.length) {
     songId = musicInfos[0].songId
   }
+  // 查找当前的songId 是否可以找到对应的timeDiff 偏移，对歌词文件time进行修改 改变offset
   lyrics = await getLyricsBySongId(songId)
+
+  const row = await queryLyricsTimeAlign(bvid, cid, songId)
+  if (row.length) {
+    const timeDiff = row[0].timeDiff
+  }
+  //TODO 改变歌词 offset
 
   // 没找到歌曲
   // 获得视频流地址
@@ -138,7 +148,9 @@ export async function getVideoInfo(e, bvid) {
   videoInfo.allPages = allPages
   videoInfo.musicName = musicName
   videoInfo.musicOriginArtist = musicOriginArtist
+  //note: 这两个进行绑定
   videoInfo.lyrics = lyrics
+  videoInfo.qqSongId = songId
   /*
    *allpage:page: {
    * cid,bvid,title
@@ -159,4 +171,8 @@ export const getPathAndUrl = () => {
   } else {
     return join(__dirname, '../renderer/rendererLyrics/index.html')
   }
+}
+
+export const saveLyricsTimeToDb = (e, bvid, cid, songId, timeDiff) => {
+  insertLyricsTimeToDb(bvid, cid, songId, timeDiff)
 }

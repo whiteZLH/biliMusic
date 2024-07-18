@@ -1,4 +1,4 @@
-let info = {}
+export let info = {}
 
 export let timeArr = []
 
@@ -10,6 +10,7 @@ export function loadLyricsText(text) {
   const lines = text.match(linesReg)
   for (const line of lines) {
     // 处理信息
+    // TODO 处理 offset
     const index = line.search(tagsReg)
     if (index !== -1) {
       const temp = line.substring(1, line.length - 1)
@@ -25,6 +26,10 @@ export function loadLyricsText(text) {
     if (temp) {
       for (const timeText of temp) {
         const time = getTimestampFromLyrics(timeText)
+        // 加入offet
+        if (info['offset']) {
+          console.log('offset:', info['offset'])
+        }
         timeArr.push({ time: time, line: lyrics })
       }
     }

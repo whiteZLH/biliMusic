@@ -18,7 +18,8 @@ if (process.contextIsolated) {
       getVideoInfo: (bvid) => ipcRenderer.invoke('getVideoInfo', bvid),
       clearCache: () => ipcRenderer.invoke('clearCache'),
       openLyricsWindow: () => ipcRenderer.invoke('openLyricsWindow'),
-      getPathAndUrl: () => ipcRenderer.invoke('getPathAndUrl')
+      getPathAndUrl: () => ipcRenderer.invoke('getPathAndUrl'),
+      saveLyricsTimeToDb: (bvid, cid, songId, timeDiff) => ipcRenderer.invoke('saveLyricsTimeToDb', bvid, cid, songId, timeDiff)
     })
   } catch (error) {
     console.error(error)

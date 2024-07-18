@@ -38,7 +38,9 @@ const changeMusic = (bvid, pic, title) => {
         musicName: videoInfoObj.musicName,
         musicOriginArtist: videoInfoObj.musicOriginArtist,
         musicLyrics: videoInfoObj.lyrics,
-        allPages: videoInfoObj.allPages
+        allPages: videoInfoObj.allPages,
+        bvid: bvid,
+        qqSongId: videoInfoObj.qqSongId
       }
       PlayerBus.emit('musicChange', musicInfo)
     })

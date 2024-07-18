@@ -35,17 +35,17 @@ watch(props.data, () => {
   updateStatus = []
 })
 onUpdated(() => {
-  console.log(itemRefs, '====')
+  // console.log(itemRefs, '====')
   for (let itemRef of itemRefs) {
     const textNode = itemRef.children[0].children[0]
     const width = textNode.clientWidth
     // 需要是当前播放列表的宽度
     if (width > 200 && !updateStatus[textNode.innerText]) {
-      console.log(textNode.innerText)
+      // console.log(textNode.innerText)
       textNode.innerText += ' ' + textNode.innerText
       updateStatus[textNode.innerText] = true
       textNode.classList.add('need-scroll')
-      console.log(textNode.classList)
+      // console.log(textNode.classList)
     }
   }
 })

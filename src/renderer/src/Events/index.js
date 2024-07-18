@@ -7,6 +7,4 @@ export const SearchBus = new mitt()
 // 歌词窗口事件
 export const LyricsWindowBus = new mitt()
 // 歌曲进度事件 1.调整歌曲进度时 获得歌曲当前时间
-export const MusicProgress = new mitt()
-
-
+export const MusicProgressBus = new mitt()

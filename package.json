@@ -25,9 +25,11 @@
     "electron-updater": "^6.1.7",
     "mitt": "^3.0.1",
     "node-text-to-png": "^0.0.9",
+    "promised-sqlite3": "^2.1.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "sharp": "^0.33.4",
+    "sqlite3": "^5.1.7",
     "text-to-svg": "^3.1.5"
   },
   "devDependencies": {

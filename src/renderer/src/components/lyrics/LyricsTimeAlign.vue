@@ -1,35 +1,62 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
+import { MusicProgressBus } from '../../Events'
 // 结构: timeArr.push({ time: time, line: lyrics })
 const props = defineProps({
   lyricsArr: Array,
   musicProgress: Number
 })
+let alreadyStart = false
+const lyricsTimeAlign = ref(null)
 const lyricsContentRef = ref(null)
 // 暂时的歌词改变
 // TODO 加入歌词纠错，由用户自己进行
 const lyricsInfo = reactive({
   lyricsArr: []
 })
-// 实现当前
-// const
-
+// 获得当前选中的歌词
 const getActiveLyrics = () => {
   // 获得scrollY 进行计算
   let index = Number.parseInt(lyricsContentRef.value.scrollTop / 40)
   if (index >= props.lyricsArr.length) index = props.lyricsArr.length - 1
-  console.log(index, props.lyricsArr[index])
-  console.log(props.musicProgress)
+  // 获得该歌词对应的时间，使用的是原始歌词的时间
+  // {time: 0, line: '我记得 - 赵雷'}
+  return props.lyricsArr[index]
 }
 // 获得当前歌曲的播放时间
 // 使用事件机制
 const getMusicProgress = () => {
+  // 如何获得? 使用props 进行传递
+  return props.musicProgress
+}
+// 开始匹配
+const startMatching = () => {
+  if (alreadyStart) return
+  alreadyStart = true
+  // 为注册监听事件
+  window.addEventListener('keydown', compareTime)
+}
+const compareTime = (e) => {
+  // 如果是回车键
+  console.log(e.code)
+  if (e.code.toLowerCase() !== 'Enter'.toLowerCase()) return
+  // 当前的歌词进度
+  const rightProgress = getMusicProgress() * 1000
+  // console.log('rightProgress',rightProgress)
+  const currentProgress = getActiveLyrics().time
+  // console.log('getActiveLyrics',getActiveLyrics().time)
+  // 获得进度的差值 使用当前的减去正确的
+  let result = currentProgress - rightProgress
+  result = parseInt(result)
+  // 暂停 改变歌词 改变歌词的展示 对歌词进行更改 播放，
+  // 进行事件通知
+  MusicProgressBus.emit('lyricsAlignMatch', result)
 }
 // 进行歌词匹配事件注册
 onMounted(() => {})
 </script>
 <template>
-  <div class="lyrics-time-align">
+  <div ref="lyricsTimeAlign" class="lyrics-time-align">
     <div class="lyrics-time-align-title">
       注意: 本功能依托于歌词和歌曲的匹配度，如不匹配，请选择与歌曲匹配的歌词
       <br />
@@ -39,7 +66,7 @@ onMounted(() => {})
     </div>
     <div class="operator-button">
       <div class="start-button button">
-        <a-button type="primary" @click="getActiveLyrics">开始匹配</a-button>
+        <a-button type="primary" @click="startMatching">开始匹配</a-button>
       </div>
     </div>
     <div class="lyrics-show">
