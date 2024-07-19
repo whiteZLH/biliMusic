@@ -66,7 +66,6 @@ const adjustLyricsTime = (timeDiff) => {
   startPause()
   // 获得当前的offset
   if (info['offset']) {
-    console.log('in')
     timeDiff = info['offset'] + timeDiff
   }
   // qq 音乐

@@ -123,9 +123,8 @@ export async function getVideoInfo(e, bvid) {
   const row = await queryLyricsTimeAlign(bvid, cid, songId)
   if (row.length) {
     const timeDiff = row[0].timeDiff
+    lyrics = `[timeDiff:` + timeDiff + `]` + lyrics
   }
-  //TODO 改变歌词 offset
-
   // 没找到歌曲
   // 获得视频流地址
   const url = paramToGetUrl(biliApi.GET_AUDIO_URL, {

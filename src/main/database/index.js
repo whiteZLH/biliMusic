@@ -19,24 +19,20 @@ export async function checkDatabase() {
   PRIMARY KEY ("bvid", "cid", "songId")
 );`
   //TODO 创建设置配置数据库
-  db.run(SQL_CREATE_LYRICS_TIME_ALIGN_TABLE).then().catch((err)=>{
-       console.log(err)
+  db.run(SQL_CREATE_LYRICS_TIME_ALIGN_TABLE).catch((err) => {
+    console.log(err)
   })
   console.log('check database finish.')
 }
 
-export function insertLyricsTimeToDb(bvid, cid, songId, timeDiff) {
-  const db = getDb()
+export async function insertLyricsTimeToDb(bvid, cid, songId, timeDiff) {
+  const db = await getDb()
   // 保存设置
   const SQL_INSERT_LYRICS_TIME_ALIGN = `INSERT INTO "lyrics_time_align" VALUES (?, ?, ?, ?);
 `
-  db.run(SQL_INSERT_LYRICS_TIME_ALIGN, [bvid, cid, songId, timeDiff], function (err) {
-    if (err) {
-      console.error("插入歌词时间数据时发生错误:", err)
-    } else {
-      console.log('歌词时间信息对齐完毕')
-    }
-  })
+  db.run(SQL_INSERT_LYRICS_TIME_ALIGN, [bvid, cid, songId, timeDiff])
+    .then((e) => console.log(e))
+    .catch((err) => console.log(err))
 }
 
 // 根据bvid, cid, songId 查询timeDiff 使用get

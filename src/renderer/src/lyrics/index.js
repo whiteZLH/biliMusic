@@ -3,20 +3,23 @@ export let info = {}
 export let timeArr = []
 
 export function loadLyricsText(text) {
+  console.log(text)
   timeArr = []
   const linesReg = /\[.+]( )?(.+)?/g
   const tagsReg = /\[(ti|ar|al|by|offset):((.+)?)]/g
   const lyricsReg = /\[\d+:\d+\.\d+]+/g
   const lines = text.match(linesReg)
+  let timeDiff = 0;
   for (const line of lines) {
     // 处理信息
-    // TODO 处理 offset
     const index = line.search(tagsReg)
     if (index !== -1) {
       const temp = line.substring(1, line.length - 1)
       const [name, content] = temp.split(':')
       info[name] = content
+      console.log(name)
       if (name === 'offset') info[name] = parseInt(content)
+      if (name === 'timeDiff') timeDiff = parseInt(content)
     }
 
     // 处理歌词 将所有的都变为Timestamp 仅仅是qq 音乐
@@ -25,10 +28,14 @@ export function loadLyricsText(text) {
     if (lyrics === '') continue
     if (temp) {
       for (const timeText of temp) {
-        const time = getTimestampFromLyrics(timeText)
-        // 加入offet
+        let time = getTimestampFromLyrics(timeText)
+        // 加入offset
         if (info['offset']) {
-          console.log('offset:', info['offset'])
+          // console.log('offset:', info['offset'])
+          time = time + parseInt(info['offset'])
+        }
+        if (timeDiff) {
+          time = time - timeDiff
         }
         timeArr.push({ time: time, line: lyrics })
       }
