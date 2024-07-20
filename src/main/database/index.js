@@ -1,15 +1,16 @@
 let dbCache
-const { AsyncDatabase } = require('promised-sqlite3')
-export async function getDb() {
+const Database = require('better-sqlite3')
+export function getDb() {
   if (!dbCache) {
-    dbCache = await AsyncDatabase.open('data.db')
+    // dbCache = await AsyncDatabase.open('data.db')
+    dbCache = new Database('data.db', { verbose: console.log })
   }
   return dbCache
 }
 
-export async function checkDatabase() {
+export function checkDatabase() {
   // 检查当前是否具有数据库 sqllite3
-  const db = await getDb()
+  const db = getDb()
   // 没有则创建歌词时间对齐数据库
   const SQL_CREATE_LYRICS_TIME_ALIGN_TABLE = `CREATE TABLE IF NOT EXISTS "lyrics_time_align" (
   "bvid" text NOT NULL,
@@ -19,28 +20,34 @@ export async function checkDatabase() {
   PRIMARY KEY ("bvid", "cid", "songId")
 );`
   //TODO 创建设置配置数据库
-  db.run(SQL_CREATE_LYRICS_TIME_ALIGN_TABLE).catch((err) => {
-    console.log(err)
-  })
+  db.exec(SQL_CREATE_LYRICS_TIME_ALIGN_TABLE)
   console.log('check database finish.')
 }
 
-export async function insertLyricsTimeToDb(bvid, cid, songId, timeDiff) {
-  const db = await getDb()
+export function insertLyricsTimeToDb(bvid, cid, songId, timeDiff) {
+  bvid = bvid + ''
+  cid = cid + ''
+  songId = songId + ''
+  const db = getDb()
   // 保存设置
-  const SQL_INSERT_LYRICS_TIME_ALIGN = `INSERT INTO "lyrics_time_align" VALUES (?, ?, ?, ?);
+  const SQL_INSERT_LYRICS_TIME_ALIGN = `INSERT INTO "lyrics_time_align" VALUES (@bvid, @cid, @songId, @timeDiff);
 `
-  db.run(SQL_INSERT_LYRICS_TIME_ALIGN, [bvid, cid, songId, timeDiff])
-    .then((e) => console.log(e))
-    .catch((err) => console.log(err))
+  const insert_stmt = db.prepare(SQL_INSERT_LYRICS_TIME_ALIGN)
+
+  insert_stmt.run({bvid,cid,songId,timeDiff})
+
 }
 
 // 根据bvid, cid, songId 查询timeDiff 使用get
-export async function queryLyricsTimeAlign(bvid, cid, songId) {
-  const db = await getDb()
-  console.log(db)
-  const GET_LYRICS_TIME_ALIGN = `SELECT timeDiff FROM lyrics_time_align WHERE bvid = ? AND cid = ? AND songId = ?`
+export function queryLyricsTimeAlign(bvid, cid, songId) {
+  bvid = bvid + ''
+  cid = cid + ''
+  songId = songId + ''
 
-  const row = await db.all(GET_LYRICS_TIME_ALIGN, [bvid, cid, songId])
-  return row
+  const db = getDb()
+  const GET_LYRICS_TIME_ALIGN = `SELECT timeDiff FROM lyrics_time_align WHERE bvid = @bvid AND cid = @cid AND songId = @songId`
+
+  const select_stmt = db.prepare(GET_LYRICS_TIME_ALIGN, [bvid, cid, songId])
+  return select_stmt.all({ bvid, cid, songId })
+  // return row
 }

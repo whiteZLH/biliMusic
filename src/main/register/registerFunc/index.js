@@ -120,7 +120,7 @@ export async function getVideoInfo(e, bvid) {
   // 查找当前的songId 是否可以找到对应的timeDiff 偏移，对歌词文件time进行修改 改变offset
   lyrics = await getLyricsBySongId(songId)
 
-  const row = await queryLyricsTimeAlign(bvid, cid, songId)
+  const row = queryLyricsTimeAlign(bvid, cid, songId)
   if (row.length) {
     const timeDiff = row[0].timeDiff
     lyrics = `[timeDiff:` + timeDiff + `]` + lyrics

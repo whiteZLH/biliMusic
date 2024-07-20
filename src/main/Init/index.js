@@ -23,7 +23,7 @@ function getCookie() {
 }
 export function initSetting() {
   // 检测数据库
-  checkDatabase().then()
+  checkDatabase()
   getCookie()
 }
 // 检查数据库
