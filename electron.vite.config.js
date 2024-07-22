@@ -5,6 +5,7 @@ export default {
   main: {
     build: {
       rollupOptions: {
+        nodeModulesPath: ['../../node_modules', './node_modules'],
         input: {
           index: resolve(__dirname, 'src/main/index.js'),
           fonts: resolve(__dirname, 'src/main/fonts/SourceHanSansSC-Normal.ttf')
@@ -32,6 +33,6 @@ export default {
         }
       }
     },
-    plugins:[vue()]
+    plugins: [vue()]
   }
 }

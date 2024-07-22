@@ -1,5 +1,5 @@
 {
-  "name": "bili-music-dev",
+  "name": "bili-music",
   "version": "1.0.1",
   "description": "New Way To Listen Music!!!",
   "main": "./out/main/index.js",
@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
-    "rebuild": "electron-rebuild -f -w better-sqlite3",
+    "rebuild": "electron-rebuild -f -w better-sqlite3 request-promise",
     "build": "electron-vite build",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
@@ -25,10 +25,14 @@
     "bluebird": "^3.7.2",
     "crypto-js": "^4.2.0",
     "electron-updater": "^6.1.7",
+    "lodash": "^4.17.21",
     "mitt": "^3.0.1",
+    "punycode": "^2.3.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
-    "sqlite3": "^5.1.7"
+    "request-promise-core": "^1.1.4",
+    "stealthy-require": "^1.1.1",
+    "tough-cookie": "^4.1.4"
   },
   "devDependencies": {
     "@arco-design/web-vue": "^2.55.2",

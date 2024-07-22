@@ -1,9 +1,13 @@
+import { app } from 'electron'
+
 let dbCache
 const Database = require('better-sqlite3')
+
+const filePath = app.getPath('userData') + '/bili.data.db'
 export function getDb() {
   if (!dbCache) {
     // dbCache = await AsyncDatabase.open('data.db')
-    dbCache = new Database('data.db', { verbose: console.log })
+    dbCache = new Database(filePath, { verbose: console.log })
   }
   return dbCache
 }
@@ -22,6 +26,7 @@ export function checkDatabase() {
   //TODO 创建设置配置数据库
   db.exec(SQL_CREATE_LYRICS_TIME_ALIGN_TABLE)
   console.log('check database finish.')
+  return filePath
 }
 
 export function insertLyricsTimeToDb(bvid, cid, songId, timeDiff) {
@@ -34,8 +39,7 @@ export function insertLyricsTimeToDb(bvid, cid, songId, timeDiff) {
 `
   const insert_stmt = db.prepare(SQL_INSERT_LYRICS_TIME_ALIGN)
 
-  insert_stmt.run({bvid,cid,songId,timeDiff})
-
+  insert_stmt.run({ bvid, cid, songId, timeDiff })
 }
 
 // 根据bvid, cid, songId 查询timeDiff 使用get
