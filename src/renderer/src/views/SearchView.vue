@@ -19,7 +19,8 @@ onBeforeUnmount(() => {
   SearchBus.off('search', onSearch)
 })
 
-const changeMusic = (bvid, pic, title) => {
+const changeMusic = (bvid) => {
+  // 设置中间状态
   window.electronAPI
     .getVideoInfo(bvid)
     .then((videoInfo) => {
@@ -31,8 +32,7 @@ const changeMusic = (bvid, pic, title) => {
         musicSrc: musicUrl,
         // TODO 此后要会有 备用链接和图片等信息
         // 图片
-        picUrl: pic,
-        musicTitle: title,
+        picUrl: videoInfoObj.pic,
         plaintMusicTitle: videoInfoObj.plaintTitle,
         cid: videoInfoObj.cid,
         musicName: videoInfoObj.musicName,
@@ -70,6 +70,10 @@ const formatVideoPic = (url) => {
   console.log(result)
   return result
 }
+
+const getEleText = (html) => {
+  return html.replace('<em class="keyword">', '').replace('</em>', '')
+}
 </script>
 <template>
   <div class="search-view">
@@ -86,7 +90,7 @@ const formatVideoPic = (url) => {
           ></a-image>
         </div>
         <div class="card-title" @dblclick="changeMusic(video.bvid, video.pic, video.title)">
-          <div v-html="video.title"></div>
+          <div :title="getEleText(video.title)" v-html="video.title"></div>
         </div>
         <div class="card-footer">
           <div class="up-icon"></div>

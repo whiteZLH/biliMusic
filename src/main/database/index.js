@@ -42,6 +42,32 @@ export function insertLyricsTimeToDb(bvid, cid, songId, timeDiff) {
   insert_stmt.run({ bvid, cid, songId, timeDiff })
 }
 
+export function insertOrUpdateLyricsTimeToDb(bvid, cid, songId, timeDiff) {
+  if (existLyricsTime(bvid, cid, songId)) {
+    updateLyricsTimeToDb(bvid, cid, songId, timeDiff)
+  } else {
+    insertLyricsTimeToDb(bvid, cid, songId, timeDiff)
+  }
+}
+
+export function existLyricsTime(bvid, cid, songId) {
+  const row = queryLyricsTimeAlign(bvid, cid, songId)
+  return row.length > 0
+}
+
+export function updateLyricsTimeToDb(bvid, cid, songId, timeDiff) {
+  bvid = bvid + ''
+  cid = cid + ''
+  songId = songId + ''
+
+  const db = getDb()
+  // 保存设置
+  const SQL_UPDATE_LYRICS_TIME_ALIGN = `UPDATE lyrics_time_align SET timeDiff = @timeDiff WHERE bvid = @bvid AND  cid = @cid AND songId = @songId;`
+  const insert_stmt = db.prepare(SQL_UPDATE_LYRICS_TIME_ALIGN)
+
+  insert_stmt.run({ bvid, cid, songId, timeDiff })
+}
+
 // 根据bvid, cid, songId 查询timeDiff 使用get
 export function queryLyricsTimeAlign(bvid, cid, songId) {
   bvid = bvid + ''

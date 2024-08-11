@@ -16,11 +16,12 @@ import {
   DocSearchTwo,
   SoundWave
 } from '@icon-park/vue-next'
-import { MusicProgressBus, PlayerBus } from '../Events'
+import { MusicProgressBus, MusicTimeAlignBus, PlayerBus } from '../Events'
 import { formatTime } from '../utils'
 import { loadLyricsText, timeArr, info } from '../lyrics'
 import PlayList from './PlayList.vue'
 import LyricsTimeAlign from './lyrics/LyricsTimeAlign.vue'
+import log from '@icon-park/vue-next/lib/icons/Log'
 // 导入结束
 // TODO 加入声音的淡入淡出
 const volume = ref(true)
@@ -372,7 +373,7 @@ const openDialog = (type) => {
   <div class="audio-player">
     <div class="player-cover">
       <div class="cover">
-        <img class="cover-img" :src="formatVideoPic(musicInfo.picUrl)" alt="图片加载失败" />
+        <img class="cover-img" :src="musicInfo.picUrl" alt="图片加载失败" />
       </div>
     </div>
     <div class="music-info">
@@ -617,6 +618,8 @@ const openDialog = (type) => {
       hide-title
       hide-cancel
       simple
+      :mask-closable="false"
+      @ok="() => MusicTimeAlignBus.emit('close', 'close')"
     >
       <!---->
       <lyrics-time-align

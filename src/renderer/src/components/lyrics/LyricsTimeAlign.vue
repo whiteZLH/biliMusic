@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
-import { MusicProgressBus } from '../../Events'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import { MusicProgressBus, MusicTimeAlignBus } from '../../Events'
 // 结构: timeArr.push({ time: time, line: lyrics })
 const props = defineProps({
   lyricsArr: Array,
@@ -14,6 +14,7 @@ const lyricsContentRef = ref(null)
 const lyricsInfo = reactive({
   lyricsArr: []
 })
+// 显示当前匹配状态
 // 获得当前选中的歌词
 const getActiveLyrics = () => {
   // 获得scrollY 进行计算
@@ -39,7 +40,8 @@ const startMatching = () => {
 const compareTime = (e) => {
   // 如果是回车键
   console.log(e.code)
-  if (e.code.toLowerCase() !== 'Enter'.toLowerCase()) return
+  if (e.code.toLowerCase() !== 'Enter'.toLowerCase() || !alreadyStart) return
+  stopMatching()
   // 当前的歌词进度
   const rightProgress = getMusicProgress() * 1000
   // console.log('rightProgress',rightProgress)
@@ -52,8 +54,17 @@ const compareTime = (e) => {
   // 进行事件通知
   MusicProgressBus.emit('lyricsAlignMatch', result)
 }
+const stopMatching = () => {
+  console.log('================')
+  alreadyStart = false
+}
 // 进行歌词匹配事件注册
-onMounted(() => {})
+onMounted(() => {
+  MusicTimeAlignBus.on('close', stopMatching)
+})
+onUnmounted(() => {
+  MusicTimeAlignBus.off('close', stopMatching)
+})
 </script>
 <template>
   <div ref="lyricsTimeAlign" class="lyrics-time-align">

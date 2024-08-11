@@ -4,7 +4,7 @@ import { mainWindow } from '../../index'
 import { search, getLyricsBySongId } from '../../qqmusic'
 import { is } from '@electron-toolkit/utils'
 import { join } from 'path'
-import { insertLyricsTimeToDb, queryLyricsTimeAlign } from '../../database'
+import { queryLyricsTimeAlign, insertOrUpdateLyricsTimeToDb } from '../../database'
 const { webFrame } = require('electron')
 
 // TODO 加入异常控制
@@ -41,6 +41,7 @@ export async function getVideoInfo(e, bvid) {
   // console.log(result)
   // 视频的cid
   const cid = resultObj.data.View.cid
+  const pic = resultObj.data.View.pic
   // 视频的 title
   const plaintTitle = resultObj.data.View.pages[0].part
   // TODO 对信息的picUrl 进行更改，// -> https://
@@ -144,6 +145,7 @@ export async function getVideoInfo(e, bvid) {
   // 将所有需要的信息封装到 videoInfo 中
   videoInfo.plaintTitle = plaintTitle
   videoInfo.cid = cid
+  videoInfo.pic = pic
   videoInfo.allPages = allPages
   videoInfo.musicName = musicName
   videoInfo.musicOriginArtist = musicOriginArtist
@@ -173,5 +175,5 @@ export const getPathAndUrl = () => {
 }
 
 export const saveLyricsTimeToDb = (e, bvid, cid, songId, timeDiff) => {
-  insertLyricsTimeToDb(bvid, cid, songId, timeDiff)
+  insertOrUpdateLyricsTimeToDb(bvid, cid, songId, timeDiff)
 }
