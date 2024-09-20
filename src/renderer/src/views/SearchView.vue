@@ -24,6 +24,7 @@ const changeMusic = (bvid) => {
   window.electronAPI
     .getVideoInfo(bvid)
     .then((videoInfo) => {
+      console.log(videoInfo)
       const videoInfoObj = JSON.parse(videoInfo)
       const musicUrl = videoInfoObj.dash.audio[0].baseUrl
       // 将这个包装为Player 的接收对象

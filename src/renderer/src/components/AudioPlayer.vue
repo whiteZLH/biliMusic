@@ -313,6 +313,9 @@ const changeMusicInfo = (targetMusicInfo) => {
   loadLyricsText(musicInfo.musicLyrics)
   // 当前的播放列表
   currentPlayList.splice(0, currentPlayList.length)
+  console.log('播放列表')
+  console.log(currentPlayList)
+  console.log('播放列表')
   Object.assign(currentPlayList, targetMusicInfo.allPages)
 }
 const changeMusicSrc = (targetMusicSrc) => {

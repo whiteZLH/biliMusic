@@ -8,7 +8,6 @@ export const biliApi = {
   GET_CID_BY_BVID: 'https://api.bilibili.com/x/player/pagelist',
   GET_DETAIL_BY_BVID: 'https://api.bilibili.com/x/web-interface/wbi/view/detail',
   GET_BGM_INFO_BY_MUSICID: 'https://api.bilibili.com/x/copyright-music-publicity/bgm/detail'
-
 }
 
 export let defaultHeaders = {

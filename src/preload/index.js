@@ -15,7 +15,7 @@ if (process.contextIsolated) {
       req: (data) => ipcRenderer.invoke('req', data),
       close: () => ipcRenderer.invoke('close'),
       min: () => ipcRenderer.invoke('min'),
-      getVideoInfo: (bvid) => ipcRenderer.invoke('getVideoInfo', bvid),
+      getVideoInfo: (bvid, cid) => ipcRenderer.invoke('getVideoInfo', bvid, cid),
       clearCache: () => ipcRenderer.invoke('clearCache'),
       openLyricsWindow: () => ipcRenderer.invoke('openLyricsWindow'),
       getPathAndUrl: () => ipcRenderer.invoke('getPathAndUrl'),

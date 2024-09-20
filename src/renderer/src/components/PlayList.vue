@@ -9,9 +9,9 @@ defineExpose({
   className
 })
 
-const changeMusic = (bvid) => {
+const changeMusic = (bvid, cid) => {
   window.electronAPI
-    .getVideoInfo(bvid)
+    .getVideoInfo(bvid, cid)
     .then((videoInfo) => {
       const videoInfoObj = JSON.parse(videoInfo)
       const musicUrl = videoInfoObj.dash.audio[0].baseUrl
@@ -102,7 +102,7 @@ onUpdated(() => {
             :fill="['#00AEEC', '', '#FFF', '']"
             stroke-linejoin="miter"
             stroke-linecap="square"
-            @click="changeMusic(item.bvid)"
+            @click="changeMusic(item.bvid, item.cid)"
             class="play-list-button"
           />
         </div>

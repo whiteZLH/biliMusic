@@ -28,10 +28,10 @@ export function min() {
   mainWindow.minimize()
 }
 
-export async function getVideoInfo(e, bvid) {
+export async function getVideoInfo(e, bvid, cid) {
+  console.log('cid:', cid)
   // 获得 detail 超详细信息
   const detailUrl = paramToGetUrl(biliApi.GET_DETAIL_BY_BVID, { platform: 'web', bvid: bvid })
-
   let result = await rp(detailUrl, {
     method: 'GET',
     headers: defaultHeaders
@@ -40,10 +40,20 @@ export async function getVideoInfo(e, bvid) {
   let resultObj = JSON.parse(result)
   // console.log(result)
   // 视频的cid
-  const cid = resultObj.data.View.cid
+  if (!cid || cid === '') cid = resultObj.data.View.cid
+  console.log('cid2', cid)
   const pic = resultObj.data.View.pic
   // 视频的 title
-  const plaintTitle = resultObj.data.View.pages[0].part
+  // TODO note：Bug 修复 寻找自己分 p 的名字
+  let index = 0
+  let pages = resultObj.data.View.pages
+  for (let i = 0; i < pages.length; i++) {
+    if (cid === pages[i].cid){
+      index = i
+      break
+    }
+  }
+  const plaintTitle = resultObj.data.View.pages[index].part
   // TODO 对信息的picUrl 进行更改，// -> https://
   // console.log(plaintTitle)
   // 获得视频所在分 p 的所有分p
@@ -67,6 +77,7 @@ export async function getVideoInfo(e, bvid) {
   let musicName = ''
   // 原唱名字
   let musicOriginArtist = ''
+  //TODO https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/player.md 解决分 p 歌曲识别问题
   for (const tag of resultObj.data.Tags) {
     if (tag.tag_type === 'bgm') {
       musicId = tag.music_id
