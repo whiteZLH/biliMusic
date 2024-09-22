@@ -21,7 +21,7 @@ export async function req(e, data) {
 }
 
 export function close() {
-  // TODO 需要在setting 中读取然后进行配置， 最小化软件但是不退出
+  // TODO 最小化软件但是不退出
   mainWindow.close()
 }
 export function min() {
@@ -29,7 +29,6 @@ export function min() {
 }
 
 export async function getVideoInfo(e, bvid, cid) {
-  console.log('cid:', cid)
   // 获得 detail 超详细信息
   const detailUrl = paramToGetUrl(biliApi.GET_DETAIL_BY_BVID, { platform: 'web', bvid: bvid })
   let result = await rp(detailUrl, {
@@ -41,14 +40,13 @@ export async function getVideoInfo(e, bvid, cid) {
   // console.log(result)
   // 视频的cid
   if (!cid || cid === '') cid = resultObj.data.View.cid
-  console.log('cid2', cid)
   const pic = resultObj.data.View.pic
   // 视频的 title
   // TODO note：Bug 修复 寻找自己分 p 的名字
   let index = 0
   let pages = resultObj.data.View.pages
   for (let i = 0; i < pages.length; i++) {
-    if (cid === pages[i].cid){
+    if (cid === pages[i].cid) {
       index = i
       break
     }
@@ -78,12 +76,19 @@ export async function getVideoInfo(e, bvid, cid) {
   // 原唱名字
   let musicOriginArtist = ''
   //TODO https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/player.md 解决分 p 歌曲识别问题
-  for (const tag of resultObj.data.Tags) {
-    if (tag.tag_type === 'bgm') {
-      musicId = tag.music_id
-      musicName = tag.tag_name
-    }
+  // 获得当前
+  const tagsUrl = paramToGetUrl(biliApi.GET_PLAYER_INFO_BVID_CID, { bvid, cid })
+  let tagsResult = await rp(tagsUrl, {
+    method: 'GET',
+    headers: defaultHeaders
+  })
+  let tagsResultObj = JSON.parse(tagsResult)
+  if (tagsResultObj.data.bgm_info) {
+    let bgmInfo = tagsResultObj.data.bgm_info
+    musicId = bgmInfo.music_id
+    musicName = bgmInfo.music_title
   }
+
   if (musicName === '') {
     let start = musicName.search('《')
     let end = musicName.search('》')
@@ -102,7 +107,7 @@ export async function getVideoInfo(e, bvid, cid) {
     musicName = musicInfoObj.data.music_title
     musicOriginArtist = musicInfoObj.data.origin_artist
   } else {
-    console.log('===================')
+    // console.log('===================')
     musicName = plaintTitle
   }
 
@@ -110,10 +115,10 @@ export async function getVideoInfo(e, bvid, cid) {
   // 进行歌词的匹配
   // 优先进行数据库匹配, 查找以前保存的歌曲数据
   //
-  console.log(musicName)
+  // console.log(musicName)
   const musicInfos = await search(musicName)
-  console.log(musicInfos)
-  console.log('-------------------')
+  // console.log(musicInfos)
+  // console.log('-------------------')
 
   let songId
   // 优先匹配title 寻找最为匹配的歌曲

@@ -35,7 +35,6 @@ const changeMusic = (bvid, cid) => {
     })
     .catch((err) => {
       console.log(err)
-      console.log(123)
     })
 }
 const props = defineProps({
