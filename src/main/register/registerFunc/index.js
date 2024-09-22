@@ -51,7 +51,14 @@ export async function getVideoInfo(e, bvid, cid) {
       break
     }
   }
-  const plaintTitle = resultObj.data.View.pages[index].part
+  // fix: BV1b7421o7vE 例子，视频标题显示问题
+  let plaintTitle = resultObj.data.View.pages[index].part
+  if (pages.length === 1) {
+    plaintTitle = resultObj.data.View.title
+    resultObj.data.View.pages[0].part = plaintTitle
+  }
+
+  console.log(plaintTitle)
   // TODO 对信息的picUrl 进行更改，// -> https://
   // console.log(plaintTitle)
   // 获得视频所在分 p 的所有分p

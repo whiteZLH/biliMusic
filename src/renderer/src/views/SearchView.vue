@@ -19,7 +19,7 @@ onBeforeUnmount(() => {
   SearchBus.off('search', onSearch)
 })
 
-const changeMusic = (bvid) => {
+const changeMusic = (bvid, pic, title) => {
   // 设置中间状态
   window.electronAPI
     .getVideoInfo(bvid)

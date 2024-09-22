@@ -9,6 +9,7 @@ defineExpose({
   className
 })
 
+// TODO 增加正在播放，以完成关于当前播放的定位
 const changeMusic = (bvid, cid) => {
   window.electronAPI
     .getVideoInfo(bvid, cid)
