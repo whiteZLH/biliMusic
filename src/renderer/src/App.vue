@@ -40,7 +40,6 @@
       <div class="tab" view="/about" @click="go('/about')">
         <icon-search :size="32" />
       </div>
-
     </div>
   </div>
   <div class="container">
@@ -62,6 +61,7 @@ import { biliApi } from '../../main/common'
 import { SearchBus } from './Events'
 import AudioPlayer from './components/AudioPlayer.vue'
 import ListTwo from '@icon-park/vue-next/lib/icons/ListTwo'
+
 export default {
   name: 'App',
   components: {
@@ -139,11 +139,13 @@ export default {
   width: 100%;
   height: 100%;
 }
+
 .control-bar {
   float: right;
   height: 32px;
   width: 104px;
   z-index: 10;
+
   .control-button {
     height: 20px;
     width: 32px;
@@ -151,12 +153,14 @@ export default {
     float: right;
     -webkit-app-region: no-drag;
   }
+
   .control-button:hover {
     //color: white;
     background-color: #00aeec;
     -webkit-app-region: no-drag;
   }
 }
+
 .left-bar {
   clear: none;
   position: absolute;
@@ -165,6 +169,7 @@ export default {
   width: 7%;
   height: 100%;
   background: rgb(240, 240, 240);
+
   .logo {
     position: relative;
     display: flex;
@@ -178,12 +183,14 @@ export default {
     -webkit-app-region: drag;
     //background-image: url('assets/img/biliLogo.png');
     background-size: 100% 100%;
+
     .svg-icon {
       display: block;
       width: 60px;
       height: 30px;
     }
   }
+
   .tabs {
     height: 93%;
     //background: #0086b3;
@@ -195,6 +202,7 @@ export default {
       justify-content: center; /* 水平居中 */
       //background: #795da3;
     }
+
     .tab.active {
       box-sizing: content-box;
       border-left: solid gray 6px;
@@ -203,6 +211,7 @@ export default {
     }
   }
 }
+
 .audio-player {
   display: block;
   //position: relative;
@@ -212,6 +221,7 @@ export default {
   bottom: 10px;
   width: 100%;
 }
+
 .search-bar {
   position: absolute;
   right: 104px;
@@ -230,6 +240,7 @@ export default {
     -webkit-app-region: no-drag;
   }
 }
+
 .container {
   position: absolute;
   right: 0;

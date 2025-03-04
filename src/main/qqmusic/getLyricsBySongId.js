@@ -1,4 +1,5 @@
 import { encryptFunc } from './encrypt'
+
 const rp = require('request-promise')
 
 let data = {

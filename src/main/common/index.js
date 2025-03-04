@@ -8,7 +8,8 @@ export const biliApi = {
   GET_CID_BY_BVID: 'https://api.bilibili.com/x/player/pagelist',
   GET_DETAIL_BY_BVID: 'https://api.bilibili.com/x/web-interface/wbi/view/detail',
   GET_BGM_INFO_BY_MUSICID: 'https://api.bilibili.com/x/copyright-music-publicity/bgm/detail',
-  GET_PLAYER_INFO_BVID_CID: 'https://api.bilibili.com/x/player/v2'
+  GET_PLAYER_INFO_BVID_CID: 'https://api.bilibili.com/x/player/v2',
+  POST_BiliTicket: 'https://api.bilibili.com/bapis/bilibili.api.ticket.v1.Ticket/GenWebTicket'
 }
 
 export let defaultHeaders = {
@@ -21,5 +22,6 @@ export let defaultHeaders = {
 }
 
 export function updateCookie(cookie) {
-  defaultHeaders['Cookie'] = cookie
+  defaultHeaders['Cookie'] += cookie
+  console.log(defaultHeaders['Cookie'])
 }

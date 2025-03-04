@@ -9,7 +9,7 @@ export function loadLyricsText(text) {
   const tagsReg = /\[(ti|ar|al|by|offset):((.+)?)]/g
   const lyricsReg = /\[\d+:\d+\.\d+]+/g
   const lines = text.match(linesReg)
-  let timeDiff = 0;
+  let timeDiff = 0
   for (const line of lines) {
     // 处理信息
     const index = line.search(tagsReg)

@@ -94,15 +94,18 @@ onUnmounted(() => {
   .lyrics-time-align-title {
     text-align: center;
   }
+
   .operator-button {
     display: flex;
     flex-wrap: wrap;
     align-content: center;
     justify-content: space-around;
   }
+
   .button {
     padding: 10px 10px;
   }
+
   .lyrics-show {
     .lyrics-show-content {
       height: 500px;
@@ -113,6 +116,7 @@ onUnmounted(() => {
       box-sizing: border-box;
       /* 使用吸附点优化, 将相近的地方变为选中状态 */
       scroll-snap-type: y proximity;
+
       .lyrics-line {
         scroll-snap-align: start;
         scroll-snap-stop: always;
@@ -121,6 +125,7 @@ onUnmounted(() => {
         height: 40px;
         line-height: 40px;
       }
+
       .active-line {
         position: absolute;
         top: 117px;

@@ -5,7 +5,7 @@ const routes = [
     path: '/',
     name: 'search',
     component: () => import('../views/SearchView.vue'),
-    meta:{ keepAlive: true}
+    meta: { keepAlive: true }
   },
   {
     path: '/about',
@@ -23,7 +23,7 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import('../views/ListView.vue'),
-    meta:{ keepAlive: true}
+    meta: { keepAlive: true }
   },
   {
     path: '/list',
@@ -32,7 +32,7 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import('../views/ListView.vue'),
-    meta:{ keepAlive: true}
+    meta: { keepAlive: true }
   }
 ]
 

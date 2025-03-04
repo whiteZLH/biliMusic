@@ -1,20 +1,21 @@
-import { updateCookie } from '../common/'
+import { defaultHeaders, updateCookie } from '../common/'
 import { biliApi } from '../common'
 import { checkDatabase } from '../database'
+import { paramToGetUrl } from '../utils'
 
-const request = require('request-promise')
+const rp = require('request-promise')
+const crypto = require('crypto')
 
 // 当前是使用axios 获得，在后面使用LocalStore 读取以前的配置
 function getCookie() {
-  request(biliApi.HOME, { resolveWithFullResponse: true })
+  // 请求首页获得基础 cookie
+  rp(biliApi.HOME, { resolveWithFullResponse: true })
     .then((body) => {
       let cookies = ''
       for (const cookie of body.headers['set-cookie']) {
         cookies += cookie
         cookies += '; '
       }
-      // console.log(body.headers)
-      // console.log(cookies)、
       console.log(cookies)
       updateCookie(cookies)
     })
@@ -22,9 +23,48 @@ function getCookie() {
       console.log(err)
     })
 }
-export function initSetting() {
+
+async function getBiliTicket(csrf) {
+  const timestamp = Math.floor(Date.now() / 1000)
+  const hexSign = hmacSha256('XgwSnGZ1p', `ts${timestamp}`)
+  const param = {
+    key_id: 'ec02',
+    hexsign: hexSign,
+    'context[ts]': timestamp,
+    csrf: csrf || ''
+  }
+
+  console.log(JSON.stringify(param))
+
+  let url = paramToGetUrl(biliApi.POST_BiliTicket, param)
+  let body = await rp(url, {
+    method: 'POST',
+    headers: defaultHeaders
+  })
+
+  // console.log('POST_BiliTicket: ', JSON.stringify(body))
+  let result = JSON.parse(body)
+  console.log(typeof result)
+
+  let cookie = `bili_ticket=${result['data'].ticket}`
+  updateCookie(cookie)
+}
+
+function hmacSha256(key, message) {
+  const hmac = crypto.createHmac('sha256', key)
+  hmac.update(message)
+  return hmac.digest('hex')
+}
+
+function addBuvid4() {}
+
+export async function initSetting() {
   // 检测数据库
   checkDatabase()
   getCookie()
+  // 降低风控概率 https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/v_voucher.md
+  await getBiliTicket('') // https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/bili_ticket.md
+  addBuvid4() // https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/buvid3_4.md
 }
+
 // 检查数据库

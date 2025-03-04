@@ -5,6 +5,7 @@ import { search, getLyricsBySongId } from '../../qqmusic'
 import { is } from '@electron-toolkit/utils'
 import { join } from 'path'
 import { queryLyricsTimeAlign, insertOrUpdateLyricsTimeToDb } from '../../database'
+
 const { webFrame } = require('electron')
 
 // TODO 加入异常控制
@@ -20,13 +21,14 @@ export async function req(e, data) {
     }
   })
   console.log('req result:', result)
-  return result;
+  return result
 }
 
 export function close() {
   // TODO 最小化软件但是不退出
   mainWindow.close()
 }
+
 export function min() {
   mainWindow.minimize()
 }

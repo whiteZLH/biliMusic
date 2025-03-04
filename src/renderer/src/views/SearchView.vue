@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeMount, onBeforeUnmount, reactive, ref } from 'vue'
 import { PlayerBus, SearchBus } from '../Events'
+
 const onSearch = (result) => {
   for (const videos of result.data.result) {
     if (videos.result_type === 'video') {
@@ -115,25 +116,31 @@ const getEleText = (html) => {
   font-size: 15px;
   line-height: 22px;
   padding-right: 5px;
+
   .search-head {
     height: 6%;
     width: 100%;
     //background: #0077aa;
   }
+
   .cards::-webkit-scrollbar {
     padding-right: 10px;
     width: 8px;
   }
+
   .cards::-webkit-scrollbar-thumb {
     background: rgba(165, 166, 167, 0.5);
     border-radius: 20px;
   }
+
   .cards::-webkit-scrollbar-thumb:hover {
     background: rgba(165, 166, 167);
   }
+
   .cards {
     height: 85%;
     overflow-y: scroll;
+
     .card {
       box-sizing: border-box;
       height: 34%;
@@ -144,6 +151,7 @@ const getEleText = (html) => {
       .arco-image {
         border-radius: 5px;
       }
+
       .card-title {
         display: -webkit-box;
         -webkit-box-orient: vertical;
@@ -156,14 +164,17 @@ const getEleText = (html) => {
         padding-right: 16px;
         text-align: left;
         cursor: pointer;
+
         :deep(.keyword) {
           font-style: normal;
           color: #f25d8e;
         }
       }
+
       .card-title :hover {
         color: #00aeec;
       }
+
       .card-footer {
         display: flex;
         flex-wrap: wrap;
@@ -173,15 +184,18 @@ const getEleText = (html) => {
         //padding-top: 5px;
         padding-left: 20px;
         cursor: pointer;
+
         .up-icon {
           height: 12px;
           width: 16px;
           background-image: url('../assets/img/up.png');
           background-size: 100% 100%;
         }
+
         .author {
           padding-left: 10px;
         }
+
         .card-footer-text {
           line-height: 12px;
           font-size: 12px;
@@ -189,16 +203,19 @@ const getEleText = (html) => {
           color: #9499a0;
         }
       }
+
       .card-footer:hover {
         .up-icon {
           background-image: url('../assets/img/up_blue.png');
         }
+
         .card-footer-text {
           color: #00aeec;
         }
       }
     }
   }
+
   .pages {
     position: absolute;
     bottom: 3%;

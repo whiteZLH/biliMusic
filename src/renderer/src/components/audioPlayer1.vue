@@ -49,7 +49,7 @@ export default {
   directives: {
     dragto: {
       // vue3 写法 vue2 需要将mounted 改为 inserted 害人不浅
-      mounted: function (el, binding, vnode) {
+      mounted: function(el, binding, vnode) {
         console.log(123)
         // 添加点击事件，单击实现进度改变
         // TODO 由当前实现方式改为可拖拽方式
@@ -75,7 +75,7 @@ export default {
     },
     adjuster: {
       // vue3 写法 vue2 需要将mounted 改为 inserted
-      mounted: function (el, binding, vnode) {
+      mounted: function(el, binding, vnode) {
         el.addEventListener(
           'click',
           (e) => {
@@ -159,14 +159,14 @@ export default {
       // 监听音频播放完毕
       myVid.addEventListener(
         'ended',
-        function () {
+        function() {
           that.audioStatus = 'play' // 显示播放icon
           document.getElementById('progressBar').style.width = '0%' // 进度条初始化
         },
         false
       )
       if (myVid != null) {
-        myVid.oncanplay = function () {
+        myVid.oncanplay = function() {
           that.duration = that.transTime(myVid.duration) // 计算音频时长
         }
         myVid.volume = 0.5 // 设置音量50%
@@ -229,6 +229,7 @@ export default {
 <style lang="scss" scoped>
 .volume {
   position: relative;
+
   .volume-progress {
     position: absolute;
     top: -150px;
@@ -238,6 +239,7 @@ export default {
     border-radius: 4px;
     padding-top: 10px;
   }
+
   .volume-bar-bg {
     margin: 0 auto;
     width: 6px;
@@ -248,6 +250,7 @@ export default {
     position: relative;
     transform: rotate(180deg);
     cursor: pointer;
+
     .volume-bar {
       width: 6px;
       height: 50%;
@@ -255,10 +258,12 @@ export default {
       border-radius: 100px;
     }
   }
+
   .checked {
     color: #56bf8b;
   }
 }
+
 .audio-right {
   width: 80%;
   height: 75px;
@@ -268,11 +273,13 @@ export default {
   display: flex;
   padding: 0 15px;
   user-select: none;
+
   .dialogAudioPlay {
     cursor: pointer;
     //color: #5c5e66;
     font-size: 20px;
   }
+
   .progress-bar-bg {
     background-color: #dcdcdc;
     flex: 1;
@@ -284,6 +291,7 @@ export default {
     cursor: pointer;
     margin: 0 10px;
   }
+
   .progress-bar {
     background-color: #56bf8b;
     width: 0%;
@@ -300,6 +308,7 @@ export default {
     .audio-length-total {
       float: right;
     }
+
     .audio-length-current {
       float: left;
     }

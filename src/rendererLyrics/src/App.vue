@@ -71,7 +71,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="lyrics-window" :class="winActive ? 'active' : ''"  ref="lyricsWindow">
+  <div class="lyrics-window" :class="winActive ? 'active' : ''" ref="lyricsWindow">
     <div class="lyrics-header">
       <div class="lyrics-header-options">
         <close
@@ -137,12 +137,14 @@ onUnmounted(() => {
   user-select: none;
   min-height: 40px;
   background: rgba(0, 0, 0, 0.3);
+
   .lyrics-header {
     position: absolute;
     display: none;
     width: 100%;
     height: 40px;
     background: rgba(0, 0, 0, 0.3);
+
     .lyrics-header-options {
       width: 100%;
       height: 40px;
@@ -151,15 +153,18 @@ onUnmounted(() => {
       flex-wrap: wrap;
       justify-content: space-around;
       align-content: center;
+
       .lyrics-header-options-button {
         cursor: pointer;
       }
     }
   }
+
   .lyrics-body {
     width: 100%;
     height: 100%;
     color: white;
+
     .lyrics-body-drag {
       height: 100%;
       box-sizing: border-box;
@@ -167,6 +172,7 @@ onUnmounted(() => {
       padding: 0 20px 20px;
       //background: red;
       justify-content: center;
+
       .lyrics-body-container {
         height: 100%;
         cursor: auto;
@@ -176,6 +182,7 @@ onUnmounted(() => {
         justify-content: center;
         align-content: center;
         overflow: hidden;
+
         .lyrics-box {
           width: 100%;
           word-wrap: break-word;
@@ -185,6 +192,7 @@ onUnmounted(() => {
     }
   }
 }
+
 .lyrics-window:hover.active {
   .lyrics-header {
     display: block;

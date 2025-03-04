@@ -191,12 +191,14 @@ const playMusic = (record) => {
   display: flex;
   flex-direction: row;
   height: 100%;
+
   .tabs-layout {
     flex: 1;
     //box-sizing: content-box;
     width: 105px;
     height: 98%;
   }
+
   .music-list-wrapper {
     flex: 11;
     height: 98%;
@@ -205,9 +207,10 @@ const playMusic = (record) => {
     .music-list {
       width: 100%;
       height: 100%;
+
       .arco-table {
         height: 100%;
-        background-color: rgba(0,0,0,0);
+        background-color: rgba(0, 0, 0, 0);
       }
     }
   }

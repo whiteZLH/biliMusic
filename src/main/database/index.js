@@ -4,6 +4,7 @@ let dbCache
 const Database = require('better-sqlite3')
 
 const filePath = app.getPath('userData') + '/bili.data.db'
+
 export function getDb() {
   if (!dbCache) {
     // dbCache = await AsyncDatabase.open('data.db')

@@ -3,6 +3,7 @@ import { onBeforeUpdate, onUpdated, reactive, ref, watch } from 'vue'
 
 import { PlayOne } from '@icon-park/vue-next'
 import { PlayerBus } from '../Events'
+
 let className = ref('')
 
 defineExpose({
@@ -141,6 +142,7 @@ onUpdated(() => {
       align-items: center;
       flex-wrap: wrap;
       width: 100%;
+
       .play-list-item-wrapper {
         display: flex;
         //align-content: center;
@@ -183,6 +185,7 @@ onUpdated(() => {
           }
         }
       }
+
       .play-list-item-operation {
         width: 100px;
         //position: absolute;
@@ -191,11 +194,13 @@ onUpdated(() => {
         display: flex;
         justify-content: space-around;
         padding-left: 10px;
+
         .play-list-button {
           cursor: pointer;
         }
       }
     }
+
     .play-list-item:hover {
       color: #0086b3;
       background: #f6f6f6;
@@ -206,10 +211,12 @@ onUpdated(() => {
     padding-right: 10px;
     width: 8px;
   }
+
   .play-list-container::-webkit-scrollbar-thumb {
     background: rgba(165, 166, 167, 0.5);
     border-radius: 20px;
   }
+
   .play-list-container::-webkit-scrollbar-thumb:hover {
     background: rgba(165, 166, 167);
   }

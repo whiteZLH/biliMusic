@@ -5,6 +5,7 @@
 </template>
 <script>
 import AudioPlayer from './audioPlayer1.vue'
+
 export default {
   name: 'PlayerBar',
   components: {
@@ -18,7 +19,8 @@ export default {
   data() {
     return {}
   },
-  mounted() {},
+  mounted() {
+  },
   methods: {}
 }
 </script>

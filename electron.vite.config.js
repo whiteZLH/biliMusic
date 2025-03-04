@@ -1,6 +1,7 @@
 // electron.vite.config.js
 import { resolve } from 'path'
 import vue from '@vitejs/plugin-vue'
+
 export default {
   main: {
     build: {

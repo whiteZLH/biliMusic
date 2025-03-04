@@ -356,7 +356,7 @@ const showOrNotPlayList = () => {
   }
 }
 const formatVideoPic = computed(() => {
-  return function (url) {
+  return function(url) {
     const result = url.replace('//', 'https://')
     // console.log(musicInfo)
     // console.log(result)
@@ -470,7 +470,7 @@ const openDialog = (type) => {
         title="歌词窗口"
         :class="lyricsWindowOpen ? 'active' : ''"
         @click="handleLyricsOpen"
-        >词</span
+      >词</span
       >
 
       <!--      播放模式，弹窗-->
@@ -524,7 +524,8 @@ const openDialog = (type) => {
                 :fill="['#333', '#2F88FF']"
                 stroke-linejoin="miter"
                 stroke-linecap="square"
-              /><span class="play-mode-text">随机播放</span></a-list-item
+              />
+              <span class="play-mode-text">随机播放</span></a-list-item
             >
             <a-list-item @click="changePlayMode($event, 'list')">
               <sort-one
@@ -533,7 +534,8 @@ const openDialog = (type) => {
                 :fill="['#333', '#2F88FF']"
                 stroke-linejoin="miter"
                 stroke-linecap="square"
-              /><span class="play-mode-text">顺序播放</span></a-list-item
+              />
+              <span class="play-mode-text">顺序播放</span></a-list-item
             >
             <a-list-item @click="changePlayMode($event, 'cycle')">
               <play-once
@@ -542,7 +544,8 @@ const openDialog = (type) => {
                 :fill="['#333', '#2F88FF']"
                 stroke-linejoin="miter"
                 stroke-linecap="square"
-              /><span class="play-mode-text">单曲循环</span></a-list-item
+              />
+              <span class="play-mode-text">单曲循环</span></a-list-item
             >
             <a-list-item @click="changePlayMode($event, 'sort')">
               <play-cycle
@@ -551,7 +554,8 @@ const openDialog = (type) => {
                 :fill="['#333', '#2F88FF']"
                 stroke-linejoin="miter"
                 stroke-linecap="square"
-              /><span class="play-mode-text">列表循环</span></a-list-item
+              />
+              <span class="play-mode-text">列表循环</span></a-list-item
             >
           </a-list>
         </template>
@@ -642,20 +646,24 @@ const openDialog = (type) => {
   background-color: rgb(246, 246, 246);
   width: 100%;
   height: 80px;
+
   .player-cover {
     float: left;
     width: 150px;
     height: 80px;
     padding: 10px 0 0 20px;
+
     .cover {
       width: 120px;
       height: 70px;
+
       .cover-img {
         width: 120px;
         height: 70px;
       }
     }
   }
+
   .music-info {
     float: left;
     width: 20%;
@@ -671,10 +679,12 @@ const openDialog = (type) => {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .title {
       font-weight: 600;
       color: gray;
     }
+
     .lyrics {
       text-align: left;
       padding: 10px 0 0 0;
@@ -682,6 +692,7 @@ const openDialog = (type) => {
       font-weight: 700;
     }
   }
+
   .process-bar {
     float: left;
     display: flex;
@@ -696,12 +707,14 @@ const openDialog = (type) => {
       height: fit-content;
       padding: 0 10px;
     }
+
     .arco-slider {
       :deep(.arco-slider-track) {
         .arco-slider-btn::after {
           display: none;
         }
       }
+
       :deep(.arco-slider-track:hover) {
         .arco-slider-btn::after {
           display: block;
@@ -709,6 +722,7 @@ const openDialog = (type) => {
       }
     }
   }
+
   .options {
     position: relative;
     float: right;
@@ -722,32 +736,39 @@ const openDialog = (type) => {
     .option-button {
       cursor: pointer;
     }
+
     .play-mode-button {
       background: none;
       padding: 0;
     }
+
     .play-mode-text {
       font-size: 12px;
       line-height: 16px;
       padding-left: 5px;
     }
+
     :deep(.arco-list-content) {
       cursor: pointer;
     }
+
     :deep(.arco-list-item-content) {
       display: flex;
       align-items: center;
     }
+
     .play-list {
       position: absolute;
       right: -400px;
       bottom: 85px;
     }
+
     .play-list.show {
       animation: show 0.3s ease-out infinite;
       animation-iteration-count: 1;
       animation-fill-mode: forwards; /*让动画停留在最后一帧 */
     }
+
     @keyframes show {
       0% {
         right: -400px;
@@ -759,11 +780,13 @@ const openDialog = (type) => {
       }
     }
   }
+
   .lyrics-button {
     font-size: 18px;
     font-weight: 500;
     font-family: 'Microsoft YaHei UI', ui-sans-serif;
   }
+
   .lyrics-button.active {
     color: #00aeec;
   }
