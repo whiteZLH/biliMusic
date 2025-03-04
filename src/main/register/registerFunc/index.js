@@ -11,13 +11,16 @@ const { webFrame } = require('electron')
 const rp = require('request-promise')
 
 export async function req(e, data) {
+  console.log(JSON.stringify(data))
   const url = paramToGetUrl(data.url, data.params)
-  return await rp(url, {
+  let result = await rp(url, {
     method: data.method,
     headers: {
       ...defaultHeaders
     }
   })
+  console.log('req result:', result)
+  return result;
 }
 
 export function close() {

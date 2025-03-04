@@ -104,6 +104,7 @@ export default {
         },
         method: 'GET'
       })
+      console.log('result: ', result)
       // window.electronAPI.clearCache()
       SearchBus.emit('search', JSON.parse(result))
     },

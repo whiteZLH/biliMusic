@@ -14,7 +14,8 @@ function getCookie() {
         cookies += '; '
       }
       // console.log(body.headers)
-      // console.log(cookies)
+      // console.log(cookies)、
+      console.log(cookies)
       updateCookie(cookies)
     })
     .catch((err) => {
