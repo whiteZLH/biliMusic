@@ -11,13 +11,10 @@ function getCookie() {
   // 请求首页获得基础 cookie
   rp(biliApi.HOME, { resolveWithFullResponse: true })
     .then((body) => {
-      let cookies = ''
       for (const cookie of body.headers['set-cookie']) {
-        cookies += cookie
-        cookies += '; '
+        let cookieObj = cookie.split('=')
+        updateCookie(cookieObj[0], cookieObj[1])
       }
-      console.log(cookies)
-      updateCookie(cookies)
     })
     .catch((err) => {
       console.log(err)
@@ -45,9 +42,7 @@ async function getBiliTicket(csrf) {
   // console.log('POST_BiliTicket: ', JSON.stringify(body))
   let result = JSON.parse(body)
   console.log(typeof result)
-
-  let cookie = `bili_ticket=${result['data'].ticket}`
-  updateCookie(cookie)
+  updateCookie('bili_ticket', `${result['data'].ticket}`)
 }
 
 function hmacSha256(key, message) {
@@ -56,7 +51,19 @@ function hmacSha256(key, message) {
   return hmac.digest('hex')
 }
 
-function addBuvid4() {}
+async function addBuvid4() {
+  let result = await rp(biliApi.GET_buvid4, {
+    method: 'GET',
+    headers: defaultHeaders
+  })
+
+  let resultObj = JSON.parse(result)
+
+  let buvid4 = resultObj.data?.b_4
+  let buvid3 = resultObj.data?.b_3
+  updateCookie('buvid4', buvid4)
+  updateCookie('buvid3', buvid3)
+}
 
 export async function initSetting() {
   // 检测数据库
@@ -64,7 +71,7 @@ export async function initSetting() {
   getCookie()
   // 降低风控概率 https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/v_voucher.md
   await getBiliTicket('') // https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/bili_ticket.md
-  addBuvid4() // https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/buvid3_4.md
+  await addBuvid4() // https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/buvid3_4.md
 }
 
 // 检查数据库
