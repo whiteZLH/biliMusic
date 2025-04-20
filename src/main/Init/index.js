@@ -62,12 +62,13 @@ async function addBuvid4() {
     headers: defaultHeaders
   })
 
+  console.log('buvid4 result', result)
   let resultObj = JSON.parse(result)
 
   let buvid4 = resultObj.data?.b_4
   let buvid3 = resultObj.data?.b_3
-  updateCookie('buvid4', buvid4)
-  updateCookie('buvid3', buvid3)
+  let cookies = `buvid4=${buvid4}; buvid3=${buvid3};`
+  updateCookie(cookies)
 }
 
 function addBuvidfp() {

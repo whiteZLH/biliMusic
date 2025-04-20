@@ -6,6 +6,7 @@ import { is } from '@electron-toolkit/utils'
 import { join } from 'path'
 import { queryLyricsTimeAlign, insertOrUpdateLyricsTimeToDb } from '../../database'
 import { log } from 'console'
+import { execFile } from 'child_process'
 
 const { webFrame } = require('electron')
 
@@ -13,8 +14,8 @@ const { webFrame } = require('electron')
 const rp = require('request-promise')
 
 export async function req(e, data) {
-  console.log(JSON.stringify(data))
-  console.log('getSearchHeader', getSearchHeader())
+  //console.log(JSON.stringify(data))
+  //console.log('getSearchHeader', getSearchHeader())
   const url = paramToGetUrl(data.url, data.params)
   let result = await rp(url, {
     method: data.method,
@@ -40,7 +41,8 @@ export async function getVideoInfo(e, bvid, cid) {
   // 获得 detail 超详细信息
   const detailUrl = paramToGetUrl(biliApi.GET_DETAIL_BY_BVID, { platform: 'web', bvid: bvid })
   // console.log('detailUrl', detailUrl)
-  // console.log('header', defaultHeaders)
+  // console.log('defaultHeaders.cookie: ', defaultHeaders.Cookie)
+  // console.log('end')
   let result = await rp(detailUrl, {
     method: 'GET',
     headers: defaultHeaders
@@ -69,7 +71,7 @@ export async function getVideoInfo(e, bvid, cid) {
     resultObj.data.View.pages[0].part = plaintTitle
   }
 
-  console.log(plaintTitle)
+  //  console.log(plaintTitle)
   // TODO 对信息的picUrl 进行更改，// -> https://
   // console.log(plaintTitle)
   // 获得视频所在分 p 的所有分p
@@ -211,4 +213,10 @@ export const getPathAndUrl = () => {
 
 export const saveLyricsTimeToDb = (e, bvid, cid, songId, timeDiff) => {
   insertOrUpdateLyricsTimeToDb(bvid, cid, songId, timeDiff)
+}
+
+export const updateTaskbarLyrics = (e, value) => {
+  let exePath = join(__dirname, '../../resources/taskbar/taskbar-text.exe')
+  // exec taskbar-text.exe
+  execFile(exePath, ['-t', value], (error, stdout, stderr) => {})
 }

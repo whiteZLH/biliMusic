@@ -19,7 +19,9 @@ if (process.contextIsolated) {
       clearCache: () => ipcRenderer.invoke('clearCache'),
       openLyricsWindow: () => ipcRenderer.invoke('openLyricsWindow'),
       getPathAndUrl: () => ipcRenderer.invoke('getPathAndUrl'),
-      saveLyricsTimeToDb: (bvid, cid, songId, timeDiff) => ipcRenderer.invoke('saveLyricsTimeToDb', bvid, cid, songId, timeDiff)
+      saveLyricsTimeToDb: (bvid, cid, songId, timeDiff) =>
+        ipcRenderer.invoke('saveLyricsTimeToDb', bvid, cid, songId, timeDiff),
+      updateTaskbarLyrics: (value) => ipcRenderer.invoke('updateTaskbarLyrics', value)
     })
   } catch (error) {
     console.error(error)

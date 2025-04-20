@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="js">
 import { reactive } from 'vue'
 import ListTabs from '../components/ListTabs.vue'
 
@@ -172,14 +172,8 @@ const playMusic = (record) => {
     </div>
     <div class="music-list-wrapper">
       <div class="music-list">
-        <a-table
-          :columns="columns"
-          :data="data"
-          :row-selection="rowSelection"
-          :pagination="false"
-          :scroll="{ maxHeight: '100%' }"
-          @row-dblclick="playMusic"
-        />
+        <a-table :columns="columns" :data="data" :row-selection="rowSelection" :pagination="false"
+          :scroll="{ maxHeight: '100%' }" @row-dblclick="playMusic" />
       </div>
     </div>
   </div>
@@ -203,6 +197,7 @@ const playMusic = (record) => {
     flex: 11;
     height: 98%;
     width: 100%;
+
     //background-color: red;
     .music-list {
       width: 100%;

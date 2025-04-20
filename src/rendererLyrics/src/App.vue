@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="js">
 import { onMounted, onUnmounted, ref } from 'vue'
 import { Close, Lock, Pushpin, Pin } from '@icon-park/vue-next'
 
@@ -13,7 +13,7 @@ const winActive = ref(true)
 const lyricsWindow = ref(null)
 const startMove = (e) => {
   if (e.target.className !== 'lyrics-body-drag') return
-  console.log(window)
+  // console.log(window)
   moveIng = true
   startX = e.x
   startY = e.y
@@ -74,48 +74,14 @@ onUnmounted(() => {
   <div class="lyrics-window" :class="winActive ? 'active' : ''" ref="lyricsWindow">
     <div class="lyrics-header">
       <div class="lyrics-header-options">
-        <close
-          class="lyrics-header-options-button"
-          title="关闭"
-          theme="two-tone"
-          size="20"
-          :fill="['white', '']"
-          stroke-linejoin="miter"
-          stroke-linecap="square"
-          @click="closeWindow"
-        />
-        <lock
-          class="lyrics-header-options-button"
-          theme="two-tone"
-          title="锁定"
-          size="20"
-          :fill="['white', '']"
-          stroke-linejoin="miter"
-          stroke-linecap="square"
-          @click="lockWindow"
-        />
-        <pushpin
-          v-if="!pined"
-          class="lyrics-header-options-button"
-          theme="two-tone"
-          title="置顶"
-          size="24"
-          :fill="['white', '']"
-          stroke-linejoin="miter"
-          stroke-linecap="square"
-          @click="handleLyricsAlwaysTop"
-        />
-        <pin
-          v-if="pined"
-          class="lyrics-header-options-button"
-          title="取消置顶"
-          theme="two-tone"
-          size="24"
-          :fill="['white', '']"
-          stroke-linejoin="miter"
-          stroke-linecap="square"
-          @click="handleLyricsAlwaysTop"
-        />
+        <close class="lyrics-header-options-button" title="关闭" theme="two-tone" size="20" :fill="['white', '']"
+          stroke-linejoin="miter" stroke-linecap="square" @click="closeWindow" />
+        <lock class="lyrics-header-options-button" theme="two-tone" title="锁定" size="20" :fill="['white', '']"
+          stroke-linejoin="miter" stroke-linecap="square" @click="lockWindow" />
+        <pushpin v-if="!pined" class="lyrics-header-options-button" theme="two-tone" title="置顶" size="24"
+          :fill="['white', '']" stroke-linejoin="miter" stroke-linecap="square" @click="handleLyricsAlwaysTop" />
+        <pin v-if="pined" class="lyrics-header-options-button" title="取消置顶" theme="two-tone" size="24"
+          :fill="['white', '']" stroke-linejoin="miter" stroke-linecap="square" @click="handleLyricsAlwaysTop" />
       </div>
     </div>
     <div class="lyrics-body">
@@ -170,7 +136,7 @@ onUnmounted(() => {
       box-sizing: border-box;
       cursor: move;
       padding: 0 20px 20px;
-      //background: red;
+      /* background: red; */
       justify-content: center;
 
       .lyrics-body-container {

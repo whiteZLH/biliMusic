@@ -7,7 +7,8 @@ import {
   clearCache,
   openLyricsWindow,
   getPathAndUrl,
-  saveLyricsTimeToDb
+  saveLyricsTimeToDb,
+  updateTaskbarLyrics
 } from './registerFunc'
 
 export function registerEvents() {
@@ -19,4 +20,5 @@ export function registerEvents() {
   ipcMain.handle('openLyricsWindow', openLyricsWindow)
   ipcMain.handle('getPathAndUrl', getPathAndUrl)
   ipcMain.handle('saveLyricsTimeToDb', saveLyricsTimeToDb)
+  ipcMain.handle('updateTaskbarLyrics', updateTaskbarLyrics)
 }

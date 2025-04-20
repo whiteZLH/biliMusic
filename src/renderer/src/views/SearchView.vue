@@ -25,7 +25,7 @@ const changeMusic = (bvid, pic, title) => {
   window.electronAPI
     .getVideoInfo(bvid)
     .then((videoInfo) => {
-      console.log(videoInfo)
+      //console.log(videoInfo)
       const videoInfoObj = JSON.parse(videoInfo)
       const musicUrl = videoInfoObj.dash.audio[0].baseUrl
       // 将这个包装为Player 的接收对象
@@ -69,7 +69,7 @@ const data = reactive({})
 const total = ref(0)
 const formatVideoPic = (url) => {
   const result = url.replace('//', 'https://')
-  console.log(result)
+  // console.log(result)
   return result
 }
 
@@ -83,13 +83,8 @@ const getEleText = (html) => {
     <div class="cards">
       <div v-for="(video, index) in data.videos" :key="index" class="card">
         <div class="card-cover">
-          <a-image
-            :width="240"
-            :height="140"
-            :src="formatVideoPic(video.pic)"
-            :show-loader="true"
-            :preview="false"
-          ></a-image>
+          <a-image :width="240" :height="140" :src="formatVideoPic(video.pic)" :show-loader="true"
+            :preview="false"></a-image>
         </div>
         <div class="card-title" @dblclick="changeMusic(video.bvid, video.pic, video.title)">
           <div :title="getEleText(video.title)" v-html="video.title"></div>
@@ -146,6 +141,7 @@ const getEleText = (html) => {
       height: 34%;
       width: 20%;
       float: left;
+
       //border: solid black 1px;
       //background: #990055;
       .arco-image {

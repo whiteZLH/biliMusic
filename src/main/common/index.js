@@ -30,8 +30,8 @@ export function updateCookie(cookie) {
 }
 
 export function setSearchCookie(cookie) {
-  // searchCookie = cookie
-  defaultHeaders.Cookie += cookie
+  searchCookie = cookie
+  // defaultHeaders.Cookie += cookie
 }
 
 export function getSearchHeader() {
