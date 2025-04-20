@@ -5,6 +5,7 @@ import { search, getLyricsBySongId } from '../../qqmusic'
 import { is } from '@electron-toolkit/utils'
 import { join } from 'path'
 import { queryLyricsTimeAlign, insertOrUpdateLyricsTimeToDb } from '../../database'
+import { log } from 'console'
 
 const { webFrame } = require('electron')
 
@@ -174,6 +175,7 @@ export async function getVideoInfo(e, bvid, cid) {
     headers: defaultHeaders
   })
   resultObj = JSON.parse(result)
+  log(result)
   const videoInfo = resultObj.data
   // 将所有需要的信息封装到 videoInfo 中
   videoInfo.plaintTitle = plaintTitle

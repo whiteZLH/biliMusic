@@ -11,10 +11,9 @@ function getCookie() {
   // 请求首页获得基础 cookie
   rp(biliApi.HOME, { resolveWithFullResponse: true })
     .then((body) => {
-      let cookies = ''
       for (const cookie of body.headers['set-cookie']) {
-        cookies += cookie
-        cookies += '; '
+        let cookieObj = cookie.split('=')
+        updateCookie(cookieObj[0], cookieObj[1])
       }
       //  console.log(cookies)
       updateCookie(cookies)
@@ -57,7 +56,19 @@ function hmacSha256(key, message) {
   return hmac.digest('hex')
 }
 
-function addBuvid4() {}
+async function addBuvid4() {
+  let result = await rp(biliApi.GET_buvid4, {
+    method: 'GET',
+    headers: defaultHeaders
+  })
+
+  let resultObj = JSON.parse(result)
+
+  let buvid4 = resultObj.data?.b_4
+  let buvid3 = resultObj.data?.b_3
+  updateCookie('buvid4', buvid4)
+  updateCookie('buvid3', buvid3)
+}
 
 function addBuvidfp() {
   let cookie = 'buvid_fp=e3d0002bbc685e96b2ba3b4a32832a2c; '
