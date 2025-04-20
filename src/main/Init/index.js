@@ -1,4 +1,4 @@
-import { defaultHeaders, updateCookie } from '../common/'
+import { defaultHeaders, updateCookie, setSearchCookie } from '../common/'
 import { biliApi } from '../common'
 import { checkDatabase } from '../database'
 import { paramToGetUrl } from '../utils'
@@ -16,8 +16,9 @@ function getCookie() {
         cookies += cookie
         cookies += '; '
       }
-      console.log(cookies)
+      //  console.log(cookies)
       updateCookie(cookies)
+      setSearchCookie(cookies)
     })
     .catch((err) => {
       console.log(err)
@@ -34,7 +35,7 @@ async function getBiliTicket(csrf) {
     csrf: csrf || ''
   }
 
-  console.log(JSON.stringify(param))
+  // console.log(JSON.stringify(param))
 
   let url = paramToGetUrl(biliApi.POST_BiliTicket, param)
   let body = await rp(url, {
@@ -46,7 +47,7 @@ async function getBiliTicket(csrf) {
   let result = JSON.parse(body)
   console.log(typeof result)
 
-  let cookie = `bili_ticket=${result['data'].ticket}`
+  let cookie = `bili_ticket=${result['data'].ticket}; `
   updateCookie(cookie)
 }
 
@@ -58,6 +59,11 @@ function hmacSha256(key, message) {
 
 function addBuvid4() {}
 
+function addBuvidfp() {
+  let cookie = 'buvid_fp=e3d0002bbc685e96b2ba3b4a32832a2c; '
+  updateCookie(cookie)
+}
+
 export async function initSetting() {
   // 检测数据库
   checkDatabase()
@@ -65,6 +71,11 @@ export async function initSetting() {
   // 降低风控概率 https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/v_voucher.md
   await getBiliTicket('') // https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/bili_ticket.md
   addBuvid4() // https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/buvid3_4.md
+  addBuvidfp() // https://github.com/SocialSisterYi/bilibili-API-collect/issues/1022
+  // https://github.com/SocialSisterYi/bilibili-API-collect/issues/933
 }
-
+// buvid_fp!!! 没有会触发风控
+// https://github.com/SocialSisterYi/bilibili-API-collect/issues/933#issue-2073916390
+// https://github.com/kingwingfly/fav/blob/489ac35e1ee17fe7ebb3748274eec789b4247631/src/api/auth/active.rs#L102
+// rs webassmly
 // 检查数据库

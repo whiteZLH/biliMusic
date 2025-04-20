@@ -21,7 +21,29 @@ export let defaultHeaders = {
   Cookie: ''
 }
 
+export let searchCookie = ''
+
 export function updateCookie(cookie) {
   defaultHeaders['Cookie'] += cookie
-  console.log(defaultHeaders['Cookie'])
+  // console.log(defaultHeaders['Cookie'])
+}
+
+export function setSearchCookie(cookie) {
+  // searchCookie = cookie
+  defaultHeaders.Cookie += cookie
+}
+
+export function getSearchHeader() {
+  //
+
+  return defaultHeaders
+
+  // return {
+  //   'User-Agent':
+  //     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0',
+  //   // 在initSetting 里加入Cookie
+  //   'Content-Type': 'application/json; charset=utf-8',
+  //   Referer: 'https://www.bilibili.com',
+  //   Cookie: searchCookie
+  // }
 }

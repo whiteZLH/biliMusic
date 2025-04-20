@@ -1,5 +1,5 @@
 import { paramToGetUrl } from '../../utils'
-import { biliApi, defaultHeaders } from '../../common'
+import { biliApi, defaultHeaders, getSearchHeader } from '../../common'
 import { mainWindow } from '../../index'
 import { search, getLyricsBySongId } from '../../qqmusic'
 import { is } from '@electron-toolkit/utils'
@@ -13,14 +13,16 @@ const rp = require('request-promise')
 
 export async function req(e, data) {
   console.log(JSON.stringify(data))
+  console.log('getSearchHeader', getSearchHeader())
   const url = paramToGetUrl(data.url, data.params)
   let result = await rp(url, {
     method: data.method,
     headers: {
-      ...defaultHeaders
+      ...defaultHeaders,
+      Cookie: ''
     }
   })
-  console.log('req result:', result)
+  // console.log('req result:', result)
   return result
 }
 
@@ -36,11 +38,14 @@ export function min() {
 export async function getVideoInfo(e, bvid, cid) {
   // 获得 detail 超详细信息
   const detailUrl = paramToGetUrl(biliApi.GET_DETAIL_BY_BVID, { platform: 'web', bvid: bvid })
+  // console.log('detailUrl', detailUrl)
+  // console.log('header', defaultHeaders)
   let result = await rp(detailUrl, {
     method: 'GET',
     headers: defaultHeaders
   })
 
+  // console.log('vedio result', result)
   let resultObj = JSON.parse(result)
   // console.log(result)
   // 视频的cid
