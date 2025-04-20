@@ -1,4 +1,4 @@
-import { defaultHeaders, updateCookie, setSearchCookie } from '../common/'
+import { defaultHeaders, updateCookie } from '../common/'
 import { biliApi } from '../common'
 import { checkDatabase } from '../database'
 import { paramToGetUrl } from '../utils'
@@ -16,8 +16,8 @@ function getCookie() {
         updateCookie(cookieObj[0], cookieObj[1])
       }
       //  console.log(cookies)
-      updateCookie(cookies)
-      setSearchCookie(cookies)
+      // updateCookie(cookies)
+      // setSearchCookie(cookies)
     })
     .catch((err) => {
       console.log(err)
