@@ -13,7 +13,7 @@ function getCookie() {
     .then((body) => {
       for (const cookie of body.headers['set-cookie']) {
         let cookieObj = cookie.split('=')
-        updateCookie(cookieObj[0], cookieObj[1])
+        updateCookie(cookieObj[0])
       }
       //  console.log(cookies)
       // updateCookie(cookies)
@@ -24,23 +24,18 @@ function getCookie() {
     })
 }
 
+/**
+ * @param {string} csrf
+ */
 async function getBiliTicket(csrf) {
   const timestamp = Math.floor(Date.now() / 1000)
   const hexSign = hmacSha256('XgwSnGZ1p', `ts${timestamp}`)
-  const param = {
-    key_id: 'ec02',
-    hexsign: hexSign,
-    'context[ts]': timestamp,
-    csrf: csrf || ''
-  }
+  const param = { key_id: 'ec02', hexsign: hexSign, 'context[ts]': timestamp, csrf: csrf || '' }
 
   // console.log(JSON.stringify(param))
 
   let url = paramToGetUrl(biliApi.POST_BiliTicket, param)
-  let body = await rp(url, {
-    method: 'POST',
-    headers: defaultHeaders
-  })
+  let body = await rp(url, { method: 'POST', headers: defaultHeaders })
 
   // console.log('POST_BiliTicket: ', JSON.stringify(body))
   let result = JSON.parse(body)
@@ -57,10 +52,7 @@ function hmacSha256(key, message) {
 }
 
 async function addBuvid4() {
-  let result = await rp(biliApi.GET_buvid4, {
-    method: 'GET',
-    headers: defaultHeaders
-  })
+  let result = await rp(biliApi.GET_buvid4, { method: 'GET', headers: defaultHeaders })
 
   console.log('buvid4 result', result)
   let resultObj = JSON.parse(result)

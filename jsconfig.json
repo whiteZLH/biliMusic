@@ -1,0 +1,17 @@
+// jsconfig.json
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    // "strict": true,
+    "jsx": "preserve",
+    "allowJs": true,
+    // "checkJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.vue"]
+}

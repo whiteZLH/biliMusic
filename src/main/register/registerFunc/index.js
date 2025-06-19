@@ -15,15 +15,10 @@ const rp = require('request-promise')
 
 export async function req(e, data) {
   //console.log(JSON.stringify(data))
-  //console.log('getSearchHeader', getSearchHeader())
+  console.log('data', JSON.stringify(data))
+  console.log('defaultHeaders', JSON.stringify(defaultHeaders))
   const url = paramToGetUrl(data.url, data.params)
-  let result = await rp(url, {
-    method: data.method,
-    headers: {
-      ...defaultHeaders,
-      Cookie: ''
-    }
-  })
+  let result = await rp(url, { method: data.method, headers: { ...defaultHeaders, Cookie: '' } })
   // console.log('req result:', result)
   return result
 }
@@ -43,10 +38,7 @@ export async function getVideoInfo(e, bvid, cid) {
   // console.log('detailUrl', detailUrl)
   // console.log('defaultHeaders.cookie: ', defaultHeaders.Cookie)
   // console.log('end')
-  let result = await rp(detailUrl, {
-    method: 'GET',
-    headers: defaultHeaders
-  })
+  let result = await rp(detailUrl, { method: 'GET', headers: defaultHeaders })
 
   // console.log('vedio result', result)
   let resultObj = JSON.parse(result)
@@ -98,10 +90,7 @@ export async function getVideoInfo(e, bvid, cid) {
   //TODO https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/player.md 解决分 p 歌曲识别问题
   // 获得当前
   const tagsUrl = paramToGetUrl(biliApi.GET_PLAYER_INFO_BVID_CID, { bvid, cid })
-  let tagsResult = await rp(tagsUrl, {
-    method: 'GET',
-    headers: defaultHeaders
-  })
+  let tagsResult = await rp(tagsUrl, { method: 'GET', headers: defaultHeaders })
   let tagsResultObj = JSON.parse(tagsResult)
   if (tagsResultObj.data.bgm_info) {
     let bgmInfo = tagsResultObj.data.bgm_info
@@ -119,10 +108,7 @@ export async function getVideoInfo(e, bvid, cid) {
   if (musicId) {
     // 获得 musicInfoUrl
     const musicInfoUrl = paramToGetUrl(biliApi.GET_BGM_INFO_BY_MUSICID, { music_id: musicId })
-    const musicInfo = await rp(musicInfoUrl, {
-      method: 'GET',
-      headers: defaultHeaders
-    })
+    const musicInfo = await rp(musicInfoUrl, { method: 'GET', headers: defaultHeaders })
     const musicInfoObj = JSON.parse(musicInfo)
     musicName = musicInfoObj.data.music_title
     musicOriginArtist = musicInfoObj.data.origin_artist
@@ -172,10 +158,7 @@ export async function getVideoInfo(e, bvid, cid) {
     fnval: 4048,
     fourk: 1
   })
-  result = await rp(url, {
-    method: 'GET',
-    headers: defaultHeaders
-  })
+  result = await rp(url, { method: 'GET', headers: defaultHeaders })
   resultObj = JSON.parse(result)
   log(result)
   const videoInfo = resultObj.data

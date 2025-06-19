@@ -59,104 +59,6 @@ let data = reactive([
     salary: 15000,
     address: '32 Park Road, London',
     email: 'jane.doe@example.com'
-  },
-  {
-    key: '7',
-    name: 'Alisa Ross 2',
-    salary: 28000,
-    address: '35 Park Road, London',
-    email: 'alisa.ross@example.com'
-  },
-  {
-    key: '8',
-    name: 'Kevin Sandra 2',
-    salary: 26000,
-    address: '31 Park Road, London',
-    email: 'kevin.sandra@example.com'
-  },
-  {
-    key: '9',
-    name: 'Ed Hellen 2',
-    salary: 18000,
-    address: '42 Park Road, London',
-    email: 'ed.hellen@example.com'
-  },
-  {
-    key: '10',
-    name: 'William Smith 2',
-    salary: 12000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
-  },
-  {
-    key: '11',
-    name: 'William Smith 2',
-    salary: 12000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
-  },
-  {
-    key: '12',
-    name: 'William Smith 2',
-    salary: 12000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
-  },
-  {
-    key: '13',
-    name: 'William Smith 2',
-    salary: 12000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
-  },
-  {
-    key: '14',
-    name: 'William Smith 2',
-    salary: 12000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
-  },
-  {
-    key: '15',
-    name: 'William Smith 2',
-    salary: 12000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
-  },
-  {
-    key: '16',
-    name: 'William Smith 2',
-    salary: 12000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
-  },
-  {
-    key: '17',
-    name: 'William Smith 2',
-    salary: 12000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
-  },
-  {
-    key: '18',
-    name: 'William Smith 2',
-    salary: 12000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
-  },
-  {
-    key: '19',
-    name: 'William Smith 2',
-    salary: 12000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
-  },
-  {
-    key: '20',
-    name: 'William Smith 2',
-    salary: 12000,
-    address: '62 Park Road, London',
-    email: 'william.smith@example.com'
   }
 ])
 
@@ -165,15 +67,22 @@ const playMusic = (record) => {
 }
 </script>
 
+<script>
+
+
+</script>
+
 <template>
   <div class="list-view">
-    <div class="tabs-layout">
-      <list-tabs />
-    </div>
-    <div class="music-list-wrapper">
-      <div class="music-list">
-        <a-table :columns="columns" :data="data" :row-selection="rowSelection" :pagination="false"
-          :scroll="{ maxHeight: '100%' }" @row-dblclick="playMusic" />
+    <div class="list-content">
+      <div class="tabs-layout">
+        <list-tabs />
+      </div>
+      <div class="music-list-wrapper">
+        <div class="music-list">
+          <a-table :columns="columns" :data="data" :row-selection="rowSelection" :pagination="false"
+            :scroll="{ maxHeight: '100%' }" @row-dblclick="playMusic" />
+        </div>
       </div>
     </div>
   </div>
@@ -183,8 +92,18 @@ const playMusic = (record) => {
 .list-view {
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: 100%;
+
+  .list-header {
+    display: flex;
+    height: 30px;
+  }
+
+  .list-content {
+    display: flex;
+    flex-direction: row;
+  }
 
   .tabs-layout {
     flex: 1;
