@@ -21,7 +21,6 @@ import { formatTime } from '../utils'
 import { loadLyricsText, timeArr, info } from '../lyrics'
 import PlayList from './PlayList.vue'
 import LyricsTimeAlign from './lyrics/LyricsTimeAlign.vue'
-import log from '@icon-park/vue-next/lib/icons/Log'
 // 导入结束
 // TODO 加入声音的淡入淡出
 const volume = ref(true)
@@ -388,84 +387,256 @@ const openDialog = (type) => {
     </div>
     <div class="process-bar">
       <div class="process-bar-text">{{ currentTimeStr }}</div>
-      <a-slider v-model="currentProcessPrecent" :min="0" :step="0.1" :max="100" :style="{ width: '70%' }"
-        :show-tooltip="false" @change="changeProcess" @mousedown="startChangeProcess" @mouseup="endChangeProcess" />
+      <a-slider
+        v-model="currentProcessPrecent"
+        :min="0"
+        :step="0.1"
+        :max="100"
+        :style="{ width: '70%' }"
+        :show-tooltip="false"
+        @change="changeProcess"
+        @mousedown="startChangeProcess"
+        @mouseup="endChangeProcess"
+      />
       <div class="process-bar-text">{{ totalTimeStr }}</div>
       <audio ref="audioRef" :src="musicSrc" @timeupdate="handleTimeUpdate" />
     </div>
     <div class="options">
       <!--      TODO 歌词选择-->
-      <doc-search-two class="option-button" theme="two-tone" size="24" :fill="['#333', '']" stroke-linejoin="miter"
-        stroke-linecap="square" title="歌词搜索" />
+      <doc-search-two
+        class="option-button"
+        theme="two-tone"
+        size="24"
+        :fill="['#333', '']"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+        title="歌词搜索"
+      />
       <!--      TODO 进行歌词进度匹配-->
-      <sound-wave class="option-button" theme="two-tone" size="24" :fill="['#333', '']" stroke-linejoin="miter"
-        stroke-linecap="square" title="歌词进度调整" @click="openDialog('lyricsTime')" />
-      <volume-notice v-if="volume" class="option-button" theme="two-tone" size="24" :fill="['#333', '']"
-        stroke-linejoin="miter" stroke-linecap="square" title="音量" @click="mute(true)" />
-      <volume-mute v-if="!volume" class="option-button" theme="two-tone" size="24" :fill="['#333', '']"
-        stroke-linejoin="miter" stroke-linecap="square" title="静音" @click="mute(false)" />
-      <like v-if="songsLike" class="option-button" theme="two-tone" size="24" :fill="['#ff6a6a', '#ff6a6a']"
-        stroke-linejoin="miter" stroke-linecap="square" title="不喜欢" @click="dislikeSong" />
-      <like v-if="!songsLike" class="option-button" theme="two-tone" size="24" :fill="['#333', '']"
-        stroke-linejoin="miter" stroke-linecap="square" title="喜欢" @click="likeSong" />
-      <span class="option-button lyrics-button" title="歌词窗口" :class="lyricsWindowOpen ? 'active' : ''"
-        @click="handleLyricsOpen">词</span>
+      <sound-wave
+        class="option-button"
+        theme="two-tone"
+        size="24"
+        :fill="['#333', '']"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+        title="歌词进度调整"
+        @click="openDialog('lyricsTime')"
+      />
+      <volume-notice
+        v-if="volume"
+        class="option-button"
+        theme="two-tone"
+        size="24"
+        :fill="['#333', '']"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+        title="音量"
+        @click="mute(true)"
+      />
+      <volume-mute
+        v-if="!volume"
+        class="option-button"
+        theme="two-tone"
+        size="24"
+        :fill="['#333', '']"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+        title="静音"
+        @click="mute(false)"
+      />
+      <like
+        v-if="songsLike"
+        class="option-button"
+        theme="two-tone"
+        size="24"
+        :fill="['#ff6a6a', '#ff6a6a']"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+        title="不喜欢"
+        @click="dislikeSong"
+      />
+      <like
+        v-if="!songsLike"
+        class="option-button"
+        theme="two-tone"
+        size="24"
+        :fill="['#333', '']"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+        title="喜欢"
+        @click="likeSong"
+      />
+      <span
+        class="option-button lyrics-button"
+        title="歌词窗口"
+        :class="lyricsWindowOpen ? 'active' : ''"
+        @click="handleLyricsOpen"
+        >词</span
+      >
 
       <!--      播放模式，弹窗-->
-      <a-popover class="popover" :content-style="{ padding: 0 }" trigger="click" popup-container=".options">
+      <a-popover
+        class="popover"
+        :content-style="{ padding: 0 }"
+        trigger="click"
+        popup-container=".options"
+      >
         <template #title></template>
         <a-button class="play-mode-button">
-          <shuffle-one v-if="playMode === 'shuffle'" theme="two-tone" size="24" :fill="['#333', '#2F88FF']"
-            stroke-linejoin="miter" stroke-linecap="square" />
-          <sort-one v-else-if="playMode === 'list'" theme="two-tone" size="24" :fill="['#333', '#2F88FF']"
-            stroke-linejoin="miter" stroke-linecap="square" />
-          <play-once v-else-if="playMode === 'cycle'" theme="two-tone" size="24" :fill="['#333', '#2F88FF']"
-            stroke-linejoin="miter" stroke-linecap="square" />
-          <play-cycle v-else-if="playMode === 'sort'" theme="two-tone" size="24" :fill="['#333', '#2F88FF']"
-            stroke-linejoin="miter" stroke-linecap="square" />
+          <shuffle-one
+            v-if="playMode === 'shuffle'"
+            theme="two-tone"
+            size="24"
+            :fill="['#333', '#2F88FF']"
+            stroke-linejoin="miter"
+            stroke-linecap="square"
+          />
+          <sort-one
+            v-else-if="playMode === 'list'"
+            theme="two-tone"
+            size="24"
+            :fill="['#333', '#2F88FF']"
+            stroke-linejoin="miter"
+            stroke-linecap="square"
+          />
+          <play-once
+            v-else-if="playMode === 'cycle'"
+            theme="two-tone"
+            size="24"
+            :fill="['#333', '#2F88FF']"
+            stroke-linejoin="miter"
+            stroke-linecap="square"
+          />
+          <play-cycle
+            v-else-if="playMode === 'sort'"
+            theme="two-tone"
+            size="24"
+            :fill="['#333', '#2F88FF']"
+            stroke-linejoin="miter"
+            stroke-linecap="square"
+          />
         </a-button>
         <template #content>
           <a-list :bordered="false" :hoverable="true">
             <a-list-item @click="changePlayMode($event, 'shuffle')">
-              <shuffle-one theme="two-tone" size="16" :fill="['#333', '#2F88FF']" stroke-linejoin="miter"
-                stroke-linecap="square" />
-              <span class="play-mode-text">随机播放</span></a-list-item>
+              <shuffle-one
+                theme="two-tone"
+                size="16"
+                :fill="['#333', '#2F88FF']"
+                stroke-linejoin="miter"
+                stroke-linecap="square"
+              />
+              <span class="play-mode-text">随机播放</span></a-list-item
+            >
+
             <a-list-item @click="changePlayMode($event, 'list')">
-              <sort-one theme="two-tone" size="16" :fill="['#333', '#2F88FF']" stroke-linejoin="miter"
-                stroke-linecap="square" />
-              <span class="play-mode-text">顺序播放</span></a-list-item>
+              <sort-one
+                theme="two-tone"
+                size="16"
+                :fill="['#333', '#2F88FF']"
+                stroke-linejoin="miter"
+                stroke-linecap="square"
+              />
+              <span class="play-mode-text">顺序播放</span></a-list-item
+            >
             <a-list-item @click="changePlayMode($event, 'cycle')">
-              <play-once theme="two-tone" size="16" :fill="['#333', '#2F88FF']" stroke-linejoin="miter"
-                stroke-linecap="square" />
-              <span class="play-mode-text">单曲循环</span></a-list-item>
+              <play-once
+                theme="two-tone"
+                size="16"
+                :fill="['#333', '#2F88FF']"
+                stroke-linejoin="miter"
+                stroke-linecap="square"
+              />
+              <span class="play-mode-text">单曲循环</span></a-list-item
+            >
             <a-list-item @click="changePlayMode($event, 'sort')">
-              <play-cycle theme="two-tone" size="16" :fill="['#333', '#2F88FF']" stroke-linejoin="miter"
-                stroke-linecap="square" />
-              <span class="play-mode-text">列表循环</span></a-list-item>
+              <play-cycle
+                theme="two-tone"
+                size="16"
+                :fill="['#333', '#2F88FF']"
+                stroke-linejoin="miter"
+                stroke-linecap="square"
+              />
+              <span class="play-mode-text">列表循环</span></a-list-item
+            >
           </a-list>
         </template>
       </a-popover>
       <!--下一首-->
-      <arrow-circle-left class="option-button" theme="two-tone" size="24" :fill="['#333', '']" stroke-linejoin="miter"
-        title="上一首" stroke-linecap="square" />
+      <arrow-circle-left
+        class="option-button"
+        theme="two-tone"
+        size="24"
+        :fill="['#333', '']"
+        stroke-linejoin="miter"
+        title="上一首"
+        stroke-linecap="square"
+      />
       <!--      !playStatus 默认为true 当前没有在播放，-->
-      <play v-if="!playStatus" class="option-button" theme="two-tone" size="40" :fill="['#333', '']"
-        stroke-linejoin="miter" stroke-linecap="square" title="播放" @click="startPlay" />
-      <pause-one v-if="playStatus" class="option-button" theme="two-tone" size="40" :fill="['#333', '']"
-        stroke-linejoin="miter" stroke-linecap="square" title="暂停" @click="startPause" />
-      <arrow-circle-right class="option-button" theme="two-tone" size="24" :fill="['#333', '']" stroke-linejoin="miter"
-        title="下一首" stroke-linecap="square" />
+      <play
+        v-if="!playStatus"
+        class="option-button"
+        theme="two-tone"
+        size="40"
+        :fill="['#333', '']"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+        title="播放"
+        @click="startPlay"
+      />
+      <pause-one
+        v-if="playStatus"
+        class="option-button"
+        theme="two-tone"
+        size="40"
+        :fill="['#333', '']"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+        title="暂停"
+        @click="startPause"
+      />
+      <arrow-circle-right
+        class="option-button"
+        theme="two-tone"
+        size="24"
+        :fill="['#333', '']"
+        stroke-linejoin="miter"
+        title="下一首"
+        stroke-linecap="square"
+      />
       <!--      播放列表-->
-      <music-list class="option-button" theme="two-tone" size="24" :fill="musicListFill" stroke-linejoin="miter"
-        stroke-linecap="square" title="播放列表" @click="showOrNotPlayList" />
+      <music-list
+        class="option-button"
+        theme="two-tone"
+        size="24"
+        :fill="musicListFill"
+        stroke-linejoin="miter"
+        stroke-linecap="square"
+        title="播放列表"
+        @click="showOrNotPlayList"
+      />
       <!--      TODO 实现播放列表 ，点击进行播放及实现喜欢列表等-->
       <play-list ref="refPlayList" :height="795" :width="400" :data="currentPlayList" />
     </div>
     <!--    歌词弹窗-->
-    <a-modal v-model:visible="dialogVisible" :width="1000" ok-text="完成更改" draggable hide-title hide-cancel simple
-      :mask-closable="false" @ok="() => MusicTimeAlignBus.emit('close', 'close')">
+    <a-modal
+      v-model:visible="dialogVisible"
+      :width="1000"
+      ok-text="完成更改"
+      draggable
+      hide-title
+      hide-cancel
+      simple
+      :mask-closable="false"
+      @ok="() => MusicTimeAlignBus.emit('close', 'close')"
+    >
       <!---->
-      <lyrics-time-align v-if="dialogType === 'lyricsTime'" :lyrics-arr="timeArr" :music-progress="currentTime" />
+      <lyrics-time-align
+        v-if="dialogType === 'lyricsTime'"
+        :lyrics-arr="timeArr"
+        :music-progress="currentTime"
+      />
       <!--      歌词搜索-->
     </a-modal>
   </div>

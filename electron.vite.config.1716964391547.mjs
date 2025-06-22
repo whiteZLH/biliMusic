@@ -19,6 +19,4 @@ var electron_vite_config_default = defineConfig({
     plugins: [vue()]
   }
 })
-export {
-  electron_vite_config_default as default
-}
+export { electron_vite_config_default as default }

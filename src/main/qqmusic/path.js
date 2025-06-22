@@ -9,4 +9,3 @@ export let navigator = {
 
 window.location = location
 window.navigator = navigator
-

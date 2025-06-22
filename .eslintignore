@@ -2,3 +2,4 @@ node_modules
 dist
 out
 .gitignore
+src/main/qqmusic/dep.js

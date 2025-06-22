@@ -45,4 +45,3 @@ export const getLyricsBySongId = async (songId) => {
   // Base64 Encoding in Node.js
   return str
 }
-

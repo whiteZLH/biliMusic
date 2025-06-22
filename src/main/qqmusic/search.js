@@ -1,7 +1,6 @@
 const rp = require('request-promise')
 import { encryptFunc } from './encrypt'
-
-''
+;('')
 let data = {
   comm: {
     _channelid: '0',

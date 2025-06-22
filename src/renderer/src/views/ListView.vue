@@ -67,10 +67,7 @@ const playMusic = (record) => {
 }
 </script>
 
-<script>
-
-
-</script>
+<script></script>
 
 <template>
   <div class="list-view">
@@ -80,8 +77,14 @@ const playMusic = (record) => {
       </div>
       <div class="music-list-wrapper">
         <div class="music-list">
-          <a-table :columns="columns" :data="data" :row-selection="rowSelection" :pagination="false"
-            :scroll="{ maxHeight: '100%' }" @row-dblclick="playMusic" />
+          <a-table
+            :columns="columns"
+            :data="data"
+            :row-selection="rowSelection"
+            :pagination="false"
+            :scroll="{ maxHeight: '100%' }"
+            @row-dblclick="playMusic"
+          />
         </div>
       </div>
     </div>

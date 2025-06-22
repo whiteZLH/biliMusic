@@ -8,6 +8,8 @@ const filePath = app.getPath('userData') + '/bili.data.db'
 export function getDb() {
   if (!dbCache) {
     // dbCache = await AsyncDatabase.open('data.db')
+    console.log('open database: ' + filePath)
+
     dbCache = new Database(filePath, { verbose: console.log })
   }
   return dbCache
@@ -17,6 +19,7 @@ export function checkDatabase() {
   // 检查当前是否具有数据库 sqllite3
   const db = getDb()
   // 没有则创建歌词时间对齐数据库
+  // @ts-ignore
   const SQL_CREATE_LYRICS_TIME_ALIGN_TABLE = `CREATE TABLE IF NOT EXISTS "lyrics_time_align" (
   "bvid" text NOT NULL,
   "cid" text NOT NULL,
@@ -24,8 +27,35 @@ export function checkDatabase() {
   "timeDiff" real,
   PRIMARY KEY ("bvid", "cid", "songId")
 );`
-  //TODO 创建设置配置数据库
+
+  // @ts-ignore
+  const SQL_CREATE_BILI_COLLECT_TABLE = `CREATE TABLE IF NOT EXISTS bili_collect (
+    id          TEXT NOT NULL
+        PRIMARY KEY,
+    title       TEXT,
+    cover       TEXT,
+    video_id    TEXT,
+    play_num    INTEGER,
+    up_name     TEXT,
+    up_mid      INTEGER,
+    media_count INTEGER,
+    custom_name TEXT
+);
+`
+
+  const SQL_CREATE_MAPPING_COLLECT_VIDEO_TABLE = `CREATE TABLE IF NOT EXISTS mapping_collect_video (
+    id         TEXT PRIMARY KEY,
+    collect_id TEXT,
+    video_id   TEXT
+);
+`
+  // 创建设置配置数据库
   db.exec(SQL_CREATE_LYRICS_TIME_ALIGN_TABLE)
+  // 创建收藏夹数据库
+  db.exec(SQL_CREATE_BILI_COLLECT_TABLE)
+  // 创建映射数据库
+  db.exec(SQL_CREATE_MAPPING_COLLECT_VIDEO_TABLE)
+
   console.log('check database finish.')
   return filePath
 }
@@ -81,4 +111,63 @@ export function queryLyricsTimeAlign(bvid, cid, songId) {
   const select_stmt = db.prepare(GET_LYRICS_TIME_ALIGN, [bvid, cid, songId])
   return select_stmt.all({ bvid, cid, songId })
   // return row
+}
+
+export function queryCollectListSavedMetadataFromDb() {
+  const db = getDb()
+  const GET_COLLECT_LIST_METADATA = `SELECT * FROM bili_collect`
+  const select_stmt = db.prepare(GET_COLLECT_LIST_METADATA)
+  return select_stmt.all()
+}
+
+export function insertCollectListMetadataToDb(collectList) {
+  const db = getDb()
+  // 保存设置
+  const SQL_INSERT_BILI_COLLECT = `INSERT INTO bili_collect (id, title, cover, video_id, play_num, up_name, up_mid, media_count, custom_name)
+    VALUES (@id, @title, @cover,  @video_id, @play_num, @up_name, @up_mid, @media_count, @custom_name);`
+
+  const insert_stmt = db.prepare(SQL_INSERT_BILI_COLLECT)
+
+  const insertMany = db.transaction((list) => {
+    for (const item of list) {
+      insert_stmt.run(item)
+    }
+  })
+
+  let collectListConverted = convertAllValuesToStrings(collectList) // 👈 确保所有字段都是字符串
+  insertMany(collectListConverted) // 👈 批量插入
+}
+
+/**
+ * 将对象数组中的所有字段转换为字符串（用于存入 TEXT 类型的 SQLite 字段）
+ * @param {Array<Object>} list - 要转换的对象数组
+ * @returns {Array<Object>} - 转换后的对象数组
+ */
+function convertAllValuesToStrings(list) {
+  return list.map((item) => {
+    const converted = {}
+    for (const key in item) {
+      const value = item[key]
+
+      // null/undefined 直接跳过
+      if (value === null || value === undefined) {
+        converted[key] = null
+      }
+      // 如果是 bigint 或 number，转为整数字符串（避免 .0）
+      else if (typeof value === 'number') {
+        // 检查是否是整数，否则用字符串保留小数
+        converted[key] = Number.isInteger(value) ? String(value) : value.toString() // 可改为 String(parseInt(value)) 如果你要强制整数
+      }
+      // 其他（字符串、布尔、对象等）直接转为字符串
+      else {
+        converted[key] = String(value)
+      }
+    }
+    return converted
+  })
+}
+
+export const queryCollectVideosListPage = (filter) => {
+  // TODO queryCollectVideosListPage page
+  // const queryCollectVideosListPage
 }

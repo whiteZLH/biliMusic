@@ -8,7 +8,11 @@ import {
   openLyricsWindow,
   getPathAndUrl,
   saveLyricsTimeToDb,
-  updateTaskbarLyrics
+  updateTaskbarLyrics,
+  searchPersonCollect,
+  saveCollectListMetadata,
+  queryCollectListSavedMetadata,
+  queryCollectVideosList
 } from './registerFunc'
 
 export function registerEvents() {
@@ -21,4 +25,8 @@ export function registerEvents() {
   ipcMain.handle('getPathAndUrl', getPathAndUrl)
   ipcMain.handle('saveLyricsTimeToDb', saveLyricsTimeToDb)
   ipcMain.handle('updateTaskbarLyrics', updateTaskbarLyrics)
+  ipcMain.handle('searchPersonCollect', searchPersonCollect)
+  ipcMain.handle('saveCollectListMetadata', saveCollectListMetadata)
+  ipcMain.handle('queryCollectListSavedMetadata', queryCollectListSavedMetadata)
+  ipcMain.handle('queryCollectVideosList', queryCollectVideosList)
 }

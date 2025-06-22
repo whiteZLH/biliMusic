@@ -94,7 +94,6 @@ app.whenReady().then(() => {
   // 进行ipc事件注册
   registerEvents()
 
-
   createWindow()
   // 注册托盘 Tray
   const trayIcon = join(__dirname, '../../resources/icon.png')
@@ -108,7 +107,7 @@ app.whenReady().then(() => {
   // createLyricsWindow()
   // mainWindow.webContents.openDevTools()
 
-  app.on('activate', function() {
+  app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

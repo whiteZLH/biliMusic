@@ -6,8 +6,12 @@
     "moduleResolution": "Node",
     // "strict": true,
     "jsx": "preserve",
-    "allowJs": true,
-    // "checkJs": true,
+    "checkJs": true,  // 开启 JS 检查
+    "noEmit": true,   // 不输出任何 TypeScript 编译结果
+    "skipLibCheck": true,  // 跳过库文件的类型检查
+    "allowJs": true,  // 允许检查 JS 文件
+    "strict": false,  // 禁用 TypeScript 的严格模式
+    "noImplicitAny": false,  // 允许隐式的 `any` 类型
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]

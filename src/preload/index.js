@@ -21,12 +21,19 @@ if (process.contextIsolated) {
       getPathAndUrl: () => ipcRenderer.invoke('getPathAndUrl'),
       saveLyricsTimeToDb: (bvid, cid, songId, timeDiff) =>
         ipcRenderer.invoke('saveLyricsTimeToDb', bvid, cid, songId, timeDiff),
-      updateTaskbarLyrics: (value) => ipcRenderer.invoke('updateTaskbarLyrics', value)
+      updateTaskbarLyrics: (value) => ipcRenderer.invoke('updateTaskbarLyrics', value),
+      searchPersonCollect: (mid) => ipcRenderer.invoke('searchPersonCollect', mid),
+      saveCollectListMetadata: (collectList) =>
+        ipcRenderer.invoke('saveCollectListMetadata', collectList),
+      queryCollectListSavedMetadata: (filter) =>
+        ipcRenderer.invoke('queryCollectListSavedMetadata', filter)
     })
   } catch (error) {
     console.error(error)
   }
 } else {
+  // @ts-ignore
   window.electron = electronAPI
+  // @ts-ignore
   window.api = api
 }

@@ -1,10 +1,16 @@
 import { paramToGetUrl } from '../../utils'
-import { biliApi, defaultHeaders, getSearchHeader } from '../../common'
+import { biliApi, defaultHeaders } from '../../common'
 import { mainWindow } from '../../index'
 import { search, getLyricsBySongId } from '../../qqmusic'
 import { is } from '@electron-toolkit/utils'
 import { join } from 'path'
-import { queryLyricsTimeAlign, insertOrUpdateLyricsTimeToDb } from '../../database'
+import {
+  queryLyricsTimeAlign,
+  insertOrUpdateLyricsTimeToDb,
+  queryCollectListSavedMetadataFromDb,
+  insertCollectListMetadataToDb,
+  queryCollectVideosListPage
+} from '../../database'
 import { log } from 'console'
 import { execFile } from 'child_process'
 
@@ -202,4 +208,72 @@ export const updateTaskbarLyrics = (e, value) => {
   let exePath = join(__dirname, '../../resources/taskbar/taskbar-text.exe')
   // exec taskbar-text.exe
   execFile(exePath, ['-t', value], (error, stdout, stderr) => {})
+}
+
+export const searchPersonCollect = async (e, mid) => {
+  const collectUrl = paramToGetUrl(biliApi.GET_USER_COLLECT, { up_mid: mid })
+  // console.log('detailUrl', detailUrl)
+  // console.log('defaultHeaders.cookie: ', defaultHeaders.Cookie)
+  // console.log('end')
+  let result = await rp(collectUrl, { method: 'GET', headers: defaultHeaders })
+  console.log(collectUrl)
+
+  console.log('collect result', result)
+
+  let resultObj = JSON.parse(result)
+
+  let list = resultObj?.data?.list
+
+  if (list) {
+    await Promise.all(
+      list.map(async (item) => {
+        const id = item.id
+        const detailUrl = paramToGetUrl(biliApi.GET_COLLECT_DETAIL, { media_id: id })
+        const detail = await rp(detailUrl, { method: 'GET', headers: defaultHeaders })
+        const detailObj = JSON.parse(detail)
+        item.detail = detailObj.data
+      })
+    )
+  } else {
+    list = []
+    console.error('No collect list found for mid:', mid)
+  }
+
+  return JSON.stringify(list)
+}
+
+export const saveCollectListMetadata = async (e, collectListJson) => {
+  console.log('saveCollectListMetadata', collectListJson)
+
+  // 生成 insert 语句
+  let collectList = JSON.parse(collectListJson)
+
+  /* 
+  {
+      id: crypto.randomUUID(),
+      title: item.title,
+      cover: item?.detail?.cover,
+      video_id: item.id,
+      play_num: item?.detail?.cnt_info?.play,
+      up_name: item?.detail?.upper?.name,
+      up_mid: item?.detail?.upper?.mid,
+      media_count: item?.detail?.media_count
+      custom_name: custom_name
+    } */
+  insertCollectListMetadataToDb(collectList)
+}
+
+export const queryCollectListSavedMetadata = () => {
+  // 查询保存的收藏夹列表
+  let result = queryCollectListSavedMetadataFromDb()
+  console.log('queryCollectListSavedMetadata', JSON.stringify(result))
+  return JSON.stringify(result)
+}
+
+export const queryCollectVideosList = (e, filterJson) => {
+  let filetr = JSON.parse(filterJson)
+
+  let result = queryCollectVideosListPage(filetr)
+
+  return JSON.stringify(result)
 }

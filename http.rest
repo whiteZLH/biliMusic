@@ -1,0 +1,40 @@
+### 
+GET /x/v3/fav/folder/created/list-all?up_mid=7792521 HTTP/1.1
+Host: api.bilibili.com
+User-Agent: curl/8.2.1
+Accept: */*
+
+####
+GET /x/v3/fav/folder/info?media_id=442339 HTTP/1.1
+Host: api.bilibili.com
+User-Agent: curl/8.2.1
+Accept: */*
+
+####
+GET /x/v3/fav/resource/infos?resources=442339:2 HTTP/1.1
+Host: api.bilibili.com
+User-Agent: curl/8.2.1
+Accept: */*
+
+###
+GET /x/v3/fav/folder/collected/list?up_mid=293793435&ps=20&pn=1 HTTP/1.1
+Host: api.bilibili.com
+User-Agent: curl/8.2.1
+Accept: */*
+
+###
+curl -G 'https://api.bilibili.com/x/v3/fav/resource/list' \
+--data-urlencode 'media_id=1052622027' \
+--data-urlencode 'platform=web' \
+--data-urlencode 'pn=1' \
+--data-urlencode 'ps=5' \
+-b 'SESSDATA=xxx'
+
+
+###
+GET /x/v3/fav/resource/list?media_id=44233921&platform=web&pn=1&ps=5 HTTP/1.1
+Host: api.bilibili.com
+User-Agent: curl/8.2.1
+Accept: */*
+
+

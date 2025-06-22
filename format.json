@@ -1,0 +1,86 @@
+[
+  {
+      "id": 44233921,
+      "fid": 442339,
+      "mid": 7792521,
+      "attr": 0,
+      "title": "默认收藏夹",
+      "fav_state": 0,
+      "media_count": 123,
+      "detail": {
+          "id": 44233921,
+          "fid": 442339,
+          "mid": 7792521,
+          "attr": 0,
+          "title": "默认收藏夹",
+          "cover": "http://i0.hdslb.com/bfs/archive/54a7b645d36be5c8b0cb54a1e6558470f57ed3df.jpg",
+          "upper": {
+              "mid": 7792521,
+              "name": "还有一天就放假了",
+              "face": "https://i0.hdslb.com/bfs/face/8d7e3d47ec0a269c37d1f244f61e979e8096270d.jpg",
+              "followed": false,
+              "vip_type": 1,
+              "vip_statue": 0
+          },
+          "cover_type": 2,
+          "cnt_info": {
+              "collect": 1,
+              "play": 637,
+              "thumb_up": 7,
+              "share": 0
+          },
+          "type": 11,
+          "intro": "",
+          "ctime": 1438893296,
+          "mtime": 1620639024,
+          "state": 0,
+          "fav_state": 0,
+          "like_state": 0,
+          "media_count": 123,
+          "is_top": false
+      },
+      "check": false
+  },
+  {
+      "id": 998903421,
+      "fid": 9989034,
+      "mid": 7792521,
+      "attr": 22,
+      "title": "素材",
+      "fav_state": 0,
+      "media_count": 98,
+      "detail": {
+          "id": 998903421,
+          "fid": 9989034,
+          "mid": 7792521,
+          "attr": 22,
+          "title": "素材",
+          "cover": "http://i0.hdslb.com/bfs/archive/1bc5e89b2d761bf7ff0c7e013f7491e8abbfc95b.jpg",
+          "upper": {
+              "mid": 7792521,
+              "name": "还有一天就放假了",
+              "face": "https://i0.hdslb.com/bfs/face/8d7e3d47ec0a269c37d1f244f61e979e8096270d.jpg",
+              "followed": false,
+              "vip_type": 1,
+              "vip_statue": 0
+          },
+          "cover_type": 2,
+          "cnt_info": {
+              "collect": 97,
+              "play": 110,
+              "thumb_up": 52,
+              "share": 2
+          },
+          "type": 11,
+          "intro": "",
+          "ctime": 1593435730,
+          "mtime": 1620639085,
+          "state": 0,
+          "fav_state": 0,
+          "like_state": 0,
+          "media_count": 98,
+          "is_top": false
+      },
+      "check": false
+  }
+]
