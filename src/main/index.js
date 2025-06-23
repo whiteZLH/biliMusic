@@ -8,6 +8,11 @@ import { registerLyricsEvents } from './lyrics-main/register'
 
 export let mainWindow
 
+// 💡 在顶层同步设置（模块加载阶段）
+if (process.platform === 'win32') {
+  app.setAppUserModelId('com.shadowzlh.biliMusic')
+}
+
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({

@@ -12,7 +12,10 @@ import {
   searchPersonCollect,
   saveCollectListMetadata,
   queryCollectListSavedMetadata,
-  queryCollectVideosList
+  queryCollectVideosList,
+  getCollectListMetadata,
+  getCollectVideoListFromBili,
+  saveCollectVideos
 } from './registerFunc'
 
 export function registerEvents() {
@@ -29,4 +32,7 @@ export function registerEvents() {
   ipcMain.handle('saveCollectListMetadata', saveCollectListMetadata)
   ipcMain.handle('queryCollectListSavedMetadata', queryCollectListSavedMetadata)
   ipcMain.handle('queryCollectVideosList', queryCollectVideosList)
+  ipcMain.handle('getCollectListMetadata', getCollectListMetadata)
+  ipcMain.handle('getCollectVideoListFromBili', getCollectVideoListFromBili)
+  ipcMain.handle('saveCollectVideos', saveCollectVideos)
 }

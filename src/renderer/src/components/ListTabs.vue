@@ -1,53 +1,55 @@
 <script setup>
-import { isSymbol } from 'lodash'
 import { ref, reactive } from 'vue'
+import { CollectVideoListBus } from '../Events'
 const props = defineProps({
   online: Array,
   history: Array,
   like: Array
 })
 
-const listMap = reactive({
-  history: [],
-  like: []
-})
+// const listMap = reactive({
+//   history: [],
+//   like: []
+// })
 const collectListSavedDbList = reactive([])
 
 // 初始化收藏列表
-async function collectListSavedDbListInit() {
+async function collectListSavedDbListRefresh() {
   let collectListSavedDbJson = await window.electronAPI.queryCollectListSavedMetadata()
   collectListSavedDbList.push(...(JSON.parse(collectListSavedDbJson) ?? []))
   console.log(collectListSavedDbList)
 }
-// 进行初始化
-collectListSavedDbListInit().then(() => {
-  // ✅ 初始化后操作
-  console.log('现在可以处理 collectListSavedDbList:', collectListSavedDbList)
 
-  collectListSavedDbList.forEach((item) => {
-    let id = item.id
-    // 查询数据库中已经保存的该收藏夹下的视频
-    // 如果没有查到则为空数组
+collectListSavedDbListRefresh()
+// // 进行初始化
+// collectListSavedDbListRefresh().then(() => {
+//   // ✅ 初始化后操作
+//   console.log('现在可以处理 collectListSavedDbList:', collectListSavedDbList)
 
-    let filter = {
-      page_size: 20,
-      page_num: 1,
-      collect_id: item.id
-    }
-    window.electronAPI
-      .queryCollectVideosList(filter)
-      .then((x) => {
-        listMap[id] = x.list
-      })
-      .catch((e) => {
-        listMap[id] = []
-        console.log('queryCollectVideosList', JSON.stringify(filter), e)
-      })
-    //
-  })
+//   collectListSavedDbList.forEach((item) => {
+//     let id = item.id
+//     // 查询数据库中已经保存的该收藏夹下的视频
+//     // 如果没有查到则为空数组
 
-  console.log('listMap:', listMap)
-})
+//     let filter = {
+//       page_size: 20,
+//       page_num: 1,
+//       collect_id: item.id
+//     }
+//     window.electronAPI
+//       .queryCollectVideosList(filter)
+//       .then((x) => {
+//         listMap[id] = x.list
+//       })
+//       .catch((e) => {
+//         listMap[id] = []
+//         console.log('queryCollectVideosList', JSON.stringify(filter), e)
+//       })
+//     //
+//   })
+
+//   console.log('listMap:', listMap)
+// })
 
 //TODO：从数据库中获得历史记录和喜欢的列表  我喜欢支持登录 b 站账号后，创建我喜欢收藏夹进行同步
 
@@ -116,7 +118,7 @@ const handleBeforeOk = async () => {
       id: crypto.randomUUID(),
       title: item.title,
       cover: item?.detail?.cover,
-      video_id: item.id,
+      bili_collect_id: item.id,
       play_num: item?.detail?.cnt_info?.play,
       up_name: item?.detail?.upper?.name,
       up_mid: item?.detail?.upper?.mid,
@@ -127,6 +129,11 @@ const handleBeforeOk = async () => {
   console.log(collectChecked)
   let collectCheckedDbJSON = JSON.stringify(collectCheckedDb)
   await window.electronAPI.saveCollectListMetadata(collectCheckedDbJSON)
+  await collectListSavedDbListRefresh()
+}
+
+const changeCollect = (collect_id) => {
+  CollectVideoListBus.emit('collect-change', collect_id)
 }
 </script>
 
@@ -134,14 +141,14 @@ const handleBeforeOk = async () => {
   <div class="list-tabs">
     <div class="tabs-wrapper">
       <!--       事件机制通知父组件进行改变当前的播放列表展示-->
-      <div class="tab">
+      <div class="tab" @click="changeCollect('history')">
         <span>当前播放</span>
       </div>
-      <div class="tab">
+      <div class="tab" @click="changeCollect('like')">
         <span>历史记录</span>
       </div>
 
-      <div v-for="item in collectListSavedDbList" :key="item.id" class="tab">
+      <div v-for="item in collectListSavedDbList" :key="item.id" class="tab" @click="changeCollect(item.id)">
         <span>{{ item.title }}</span>
       </div>
       <div class="tab" @click="openListAddPanel">
@@ -149,13 +156,8 @@ const handleBeforeOk = async () => {
       </div>
 
       <div class="add-panel">
-        <a-modal
-          v-model:visible="addPanelVisible"
-          title="收藏夹选择"
-          :render-to-body="false"
-          @cancel="closeListAddPanel"
-          @before-ok="handleBeforeOk"
-        >
+        <a-modal v-model:visible="addPanelVisible" title="收藏夹选择" :render-to-body="false" @cancel="closeListAddPanel"
+          @before-ok="handleBeforeOk">
           <a-form :model="addPanelForm">
             <a-form-item label="mid" class="add-panel-mid">
               <a-input v-model="addPanelForm.mid" placeholder="请输入用户 mid" />
@@ -168,10 +170,8 @@ const handleBeforeOk = async () => {
             <div v-else class="collect-list-has">
               <a-list :max-height="400" :style="{ width: `400px` }">
                 <a-list-item v-for="item in collectList" :key="item.id">
-                  <a-list-item-meta
-                    :title="item.title"
-                    :description="`视频数：${item?.detail?.media_count} | 播放量：${item?.detail?.cnt_info?.play}`"
-                  >
+                  <a-list-item-meta :title="item.title"
+                    :description="`视频数：${item?.detail?.media_count} | 播放量：${item?.detail?.cnt_info?.play}`">
                     <template #avatar>
                       <a-avatar shape="square">
                         <img alt="avatar" :src="item?.detail?.cover || item?.detail?.upper?.face" />
@@ -222,6 +222,7 @@ const handleBeforeOk = async () => {
       .add-panel-mid {
         display: flex;
         flex-direction: row;
+
         // gap: 10px;
         :deep(.arco-form-item-content) {
           gap: 10px;

@@ -26,7 +26,12 @@ if (process.contextIsolated) {
       saveCollectListMetadata: (collectList) =>
         ipcRenderer.invoke('saveCollectListMetadata', collectList),
       queryCollectListSavedMetadata: (filter) =>
-        ipcRenderer.invoke('queryCollectListSavedMetadata', filter)
+        ipcRenderer.invoke('queryCollectListSavedMetadata', filter),
+      queryCollectVideosList: (filter) => ipcRenderer.invoke('queryCollectVideosList', filter),
+      getCollectListMetadata: (id) => ipcRenderer.invoke('getCollectListMetadata', id),
+      getCollectVideoListFromBili: (filter) =>
+        ipcRenderer.invoke('getCollectVideoListFromBili', filter),
+      saveCollectVideos: (videos) => ipcRenderer.invoke('saveCollectVideos', videos)
     })
   } catch (error) {
     console.error(error)

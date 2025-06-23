@@ -1,11 +1,61 @@
 <script setup lang="js">
-import { reactive } from 'vue'
+import { onMounted, onUnmounted, reactive } from 'vue'
 import ListTabs from '../components/ListTabs.vue'
+import { CollectVideoListBus } from '../Events';
+import { random } from 'lodash';
 
 const rowSelection = reactive({
   type: 'checkbox',
   showCheckedAll: true
 })
+
+const collectChange = async (collect_id) => {
+  console.log('ListView');
+  console.log('collect_id', collect_id);
+
+  // 获得收藏夹数据，是否同步过，优先使用本地数据
+
+  let collectInfoJson = await window.electronAPI.getCollectListMetadata(collect_id)
+
+  let collectInfo = JSON.parse(collectInfoJson)
+  while (videos.length) {
+    videos.pop()
+  }
+  if (collectInfo.sync) {
+    let filter = {
+      page_size: 20,
+      page_num: 1,
+      collect_id: collect_id
+    }
+    let { list, total } = await window.electronAPI.queryCollectVideosList(JSON.stringify(filter))
+    videos.push(...(list ?? []))
+  } else {
+    //1. 请求bili，获得数据
+
+    let filter = {
+      bili_collect_id: collectInfo.bili_collect_id,
+      page_size: 20,
+      page_num: 1
+    }
+    let videosBiliJson = await window.electronAPI.getCollectVideoListFromBili(JSON.stringify(filter))
+    //2. 持久化到数据库中
+    let videosBili = JSON.parse(videosBiliJson)
+
+    var videosBiliDb = videosBili.map(x => {
+      return {
+        id: crypto.randomUUID(),
+        ...x
+      }
+    });
+
+    console.log(JSON.stringify(videosBiliDb));
+
+    await window.electronAPI.saveCollectVideos(JSON.stringify(videosBiliDb))
+
+    videos.push(...(videosBili ?? []))
+  }
+}
+
 
 const columns = [
   {
@@ -17,7 +67,7 @@ const columns = [
     dataIndex: 'salary'
   }
 ]
-let data = reactive([
+let videos = reactive([
   {
     key: '1',
     name: 'Jane Doe',
@@ -62,6 +112,16 @@ let data = reactive([
   }
 ])
 
+
+
+onMounted(() => {
+  CollectVideoListBus.on('collect-change', collectChange)
+})
+onUnmounted(() => {
+  CollectVideoListBus.off('collect-change', collectChange)
+})
+
+
 const playMusic = (record) => {
   console.log(record)
 }
@@ -77,14 +137,8 @@ const playMusic = (record) => {
       </div>
       <div class="music-list-wrapper">
         <div class="music-list">
-          <a-table
-            :columns="columns"
-            :data="data"
-            :row-selection="rowSelection"
-            :pagination="false"
-            :scroll="{ maxHeight: '100%' }"
-            @row-dblclick="playMusic"
-          />
+          <a-table :columns="columns" :data="videos" :row-selection="rowSelection" :pagination="false"
+            :scroll="{ maxHeight: '100%' }" @row-dblclick="playMusic" />
         </div>
       </div>
     </div>

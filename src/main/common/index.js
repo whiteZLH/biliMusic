@@ -12,7 +12,8 @@ export const biliApi = {
   POST_BiliTicket: 'https://api.bilibili.com/bapis/bilibili.api.ticket.v1.Ticket/GenWebTicket',
   GET_buvid4: 'https://api.bilibili.com/x/frontend/finger/spi',
   GET_USER_COLLECT: 'https://api.bilibili.com/x/v3/fav/folder/created/list-all',
-  GET_COLLECT_DETAIL: 'https://api.bilibili.com/x/v3/fav/folder/info'
+  GET_COLLECT_DETAIL: 'https://api.bilibili.com/x/v3/fav/folder/info',
+  GET_COLLECT_VIDEO_LIST: 'https://api.bilibili.com/x/v3/fav/resource/list'
 }
 
 export let defaultHeaders = {

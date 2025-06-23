@@ -9,10 +9,13 @@ import {
   insertOrUpdateLyricsTimeToDb,
   queryCollectListSavedMetadataFromDb,
   insertCollectListMetadataToDb,
-  queryCollectVideosListPage
+  queryCollectVideosListPage,
+  getbiliCollect,
+  insertBiliVideoToDb
 } from '../../database'
 import { log } from 'console'
 import { execFile } from 'child_process'
+import { json } from 'stream/consumers'
 
 const { webFrame } = require('electron')
 
@@ -253,7 +256,7 @@ export const saveCollectListMetadata = async (e, collectListJson) => {
       id: crypto.randomUUID(),
       title: item.title,
       cover: item?.detail?.cover,
-      video_id: item.id,
+      bili_collect_id: item.id,
       play_num: item?.detail?.cnt_info?.play,
       up_name: item?.detail?.upper?.name,
       up_mid: item?.detail?.upper?.mid,
@@ -276,4 +279,48 @@ export const queryCollectVideosList = (e, filterJson) => {
   let result = queryCollectVideosListPage(filetr)
 
   return JSON.stringify(result)
+}
+
+export const getCollectListMetadata = (e, id) => {
+  let result = getbiliCollect(id)
+  return JSON.stringify(result)
+}
+
+export const getCollectVideoListFromBili = async (e, filterJson) => {
+  console.log(filterJson)
+
+  let filter = JSON.parse(filterJson)
+  let param = {
+    media_id: filter.bili_collect_id,
+    platform: 'web',
+    pn: filter.page_num,
+    ps: filter.page_size
+  }
+  let url = paramToGetUrl(biliApi.GET_COLLECT_VIDEO_LIST, param)
+  console.log('getCollectVideoListFromBili url: ', url)
+
+  let data = await rp(url, { method: 'GET' })
+
+  let dataObj = JSON.parse(data)
+
+  let medias = dataObj?.data?.medias ?? []
+
+  let result = medias.map((x) => {
+    return {
+      collect_id: filter?.bili_collect_id,
+      name: x?.title,
+      bvid: x?.bvid,
+      cid: x?.ugc?.first_cid ?? '',
+      pic_url: x?.cover
+    }
+  })
+
+  return JSON.stringify(result)
+}
+
+export const saveCollectVideos = (e, videosJson) => {
+  console.log('videosJson', videosJson)
+
+  const videos = JSON.parse(videosJson)
+  insertBiliVideoToDb(videos)
 }

@@ -29,17 +29,18 @@ export function checkDatabase() {
 );`
 
   // @ts-ignore
-  const SQL_CREATE_BILI_COLLECT_TABLE = `CREATE TABLE IF NOT EXISTS bili_collect (
-    id          TEXT NOT NULL
-        PRIMARY KEY,
+  const SQL_CREATE_BILI_COLLECT_TABLE = ` CREATE TABLE  IF NOT EXISTS bili_collect (
+    id          TEXT not null
+        primary key,
     title       TEXT,
     cover       TEXT,
-    video_id    TEXT,
+    bili_collect_id    TEXT,
     play_num    INTEGER,
     up_name     TEXT,
     up_mid      INTEGER,
     media_count INTEGER,
-    custom_name TEXT
+    custom_name TEXT,
+    sync        INTEGER
 );
 `
 
@@ -49,12 +50,24 @@ export function checkDatabase() {
     video_id   TEXT
 );
 `
+
+  const SQL_CREATE_BILI_VIDEO_TABLE = `CREATE TABLE IF NOT EXISTS bili_video (
+    id         TEXT,
+    collect_id TEXT,
+    name       TEXT,
+    bvid       TEXT,
+    cid        TEXT,
+    pic_url    TEXT
+);
+`
   // 创建设置配置数据库
   db.exec(SQL_CREATE_LYRICS_TIME_ALIGN_TABLE)
   // 创建收藏夹数据库
   db.exec(SQL_CREATE_BILI_COLLECT_TABLE)
   // 创建映射数据库
   db.exec(SQL_CREATE_MAPPING_COLLECT_VIDEO_TABLE)
+  // 创建视频数据库
+  db.exec(SQL_CREATE_BILI_VIDEO_TABLE)
 
   console.log('check database finish.')
   return filePath
@@ -66,8 +79,7 @@ export function insertLyricsTimeToDb(bvid, cid, songId, timeDiff) {
   songId = songId + ''
   const db = getDb()
   // 保存设置
-  const SQL_INSERT_LYRICS_TIME_ALIGN = `INSERT INTO "lyrics_time_align" VALUES (@bvid, @cid, @songId, @timeDiff);
-`
+  const SQL_INSERT_LYRICS_TIME_ALIGN = `INSERT INTO "lyrics_time_align" VALUES (@bvid, @cid, @songId, @timeDiff);`
   const insert_stmt = db.prepare(SQL_INSERT_LYRICS_TIME_ALIGN)
 
   insert_stmt.run({ bvid, cid, songId, timeDiff })
@@ -123,8 +135,8 @@ export function queryCollectListSavedMetadataFromDb() {
 export function insertCollectListMetadataToDb(collectList) {
   const db = getDb()
   // 保存设置
-  const SQL_INSERT_BILI_COLLECT = `INSERT INTO bili_collect (id, title, cover, video_id, play_num, up_name, up_mid, media_count, custom_name)
-    VALUES (@id, @title, @cover,  @video_id, @play_num, @up_name, @up_mid, @media_count, @custom_name);`
+  const SQL_INSERT_BILI_COLLECT = `INSERT INTO bili_collect (id, title, cover, bili_collect_id, play_num, up_name, up_mid, media_count, custom_name, sync)
+    VALUES (@id, @title, @cover,  @bili_collect_id, @play_num, @up_name, @up_mid, @media_count, @custom_name, false);`
 
   const insert_stmt = db.prepare(SQL_INSERT_BILI_COLLECT)
 
@@ -170,4 +182,35 @@ function convertAllValuesToStrings(list) {
 export const queryCollectVideosListPage = (filter) => {
   // TODO queryCollectVideosListPage page
   // const queryCollectVideosListPage
+
+  let list = []
+  let total = 0
+
+  return {
+    list,
+    total
+  }
+}
+
+export const getbiliCollect = (id) => {
+  const db = getDb()
+  const GET_COLLECT_LIST_METADATA = `SELECT * FROM bili_collect where id = @id`
+  const select_stmt = db.prepare(GET_COLLECT_LIST_METADATA)
+  return select_stmt.get({ id })
+}
+
+export const insertBiliVideoToDb = (videos) => {
+  const db = getDb()
+
+  const SQL_INSERT_Bili_Video = `INSERT INTO bili_video (id, collect_id, name, bvid, cid, pic_url) VALUES (@id, @collect_id, @name, @bvid, @cid, @pic_url);`
+  const insert_stmt = db.prepare(SQL_INSERT_Bili_Video)
+
+  const insertMany = db.transaction((list) => {
+    for (const item of list) {
+      insert_stmt.run(item)
+    }
+  })
+  console.log(typeof videos)
+  let videosListConverted = convertAllValuesToStrings(videos) // 👈 确保所有字段都是字符串
+  insertMany(videosListConverted) // 👈 批量插入
 }
