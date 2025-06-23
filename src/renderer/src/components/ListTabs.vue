@@ -133,22 +133,35 @@ const handleBeforeOk = async () => {
 }
 
 const changeCollect = (collect_id) => {
+  activeTab.value = collect_id
   CollectVideoListBus.emit('collect-change', collect_id)
 }
+
+const activeTab = ref('current')
 </script>
 
 <template>
   <div class="list-tabs">
     <div class="tabs-wrapper">
       <!--       事件机制通知父组件进行改变当前的播放列表展示-->
-      <div class="tab" @click="changeCollect('history')">
+      <div
+        class="tab"
+        :class="{ active: activeTab === 'current' }"
+        @click="changeCollect('current')"
+      >
         <span>当前播放</span>
       </div>
-      <div class="tab" @click="changeCollect('like')">
+      <div class="tab" :class="{ active: activeTab === 'like' }" @click="changeCollect('like')">
         <span>历史记录</span>
       </div>
 
-      <div v-for="item in collectListSavedDbList" :key="item.id" class="tab" @click="changeCollect(item.id)">
+      <div
+        v-for="item in collectListSavedDbList"
+        :key="item.id"
+        class="tab"
+        :class="{ active: activeTab === item.id }"
+        @click="changeCollect(item.id)"
+      >
         <span>{{ item.title }}</span>
       </div>
       <div class="tab" @click="openListAddPanel">
@@ -156,8 +169,13 @@ const changeCollect = (collect_id) => {
       </div>
 
       <div class="add-panel">
-        <a-modal v-model:visible="addPanelVisible" title="收藏夹选择" :render-to-body="false" @cancel="closeListAddPanel"
-          @before-ok="handleBeforeOk">
+        <a-modal
+          v-model:visible="addPanelVisible"
+          title="收藏夹选择"
+          :render-to-body="false"
+          @cancel="closeListAddPanel"
+          @before-ok="handleBeforeOk"
+        >
           <a-form :model="addPanelForm">
             <a-form-item label="mid" class="add-panel-mid">
               <a-input v-model="addPanelForm.mid" placeholder="请输入用户 mid" />
@@ -170,8 +188,10 @@ const changeCollect = (collect_id) => {
             <div v-else class="collect-list-has">
               <a-list :max-height="400" :style="{ width: `400px` }">
                 <a-list-item v-for="item in collectList" :key="item.id">
-                  <a-list-item-meta :title="item.title"
-                    :description="`视频数：${item?.detail?.media_count} | 播放量：${item?.detail?.cnt_info?.play}`">
+                  <a-list-item-meta
+                    :title="item.title"
+                    :description="`视频数：${item?.detail?.media_count} | 播放量：${item?.detail?.cnt_info?.play}`"
+                  >
                     <template #avatar>
                       <a-avatar shape="square">
                         <img alt="avatar" :src="item?.detail?.cover || item?.detail?.upper?.face" />
@@ -211,6 +231,9 @@ const changeCollect = (collect_id) => {
         width: 100px;
         height: 40px;
       }
+    }
+    .tab.active {
+      color: rgba(3, 174, 236, 1);
     }
 
     .tab:hover {

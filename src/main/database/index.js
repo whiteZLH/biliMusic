@@ -150,41 +150,60 @@ export function insertCollectListMetadataToDb(collectList) {
   insertMany(collectListConverted) // 👈 批量插入
 }
 
-/**
- * 将对象数组中的所有字段转换为字符串（用于存入 TEXT 类型的 SQLite 字段）
- * @param {Array<Object>} list - 要转换的对象数组
- * @returns {Array<Object>} - 转换后的对象数组
- */
-function convertAllValuesToStrings(list) {
-  return list.map((item) => {
-    const converted = {}
-    for (const key in item) {
-      const value = item[key]
-
-      // null/undefined 直接跳过
+function convertAllValuesToStrings(data) {
+  if (Array.isArray(data)) {
+    return data.map(convertAllValuesToStrings)
+  } else if (data !== null && typeof data === 'object') {
+    const result = {}
+    for (const key in data) {
+      const value = data[key]
       if (value === null || value === undefined) {
-        converted[key] = null
-      }
-      // 如果是 bigint 或 number，转为整数字符串（避免 .0）
-      else if (typeof value === 'number') {
-        // 检查是否是整数，否则用字符串保留小数
-        converted[key] = Number.isInteger(value) ? String(value) : value.toString() // 可改为 String(parseInt(value)) 如果你要强制整数
-      }
-      // 其他（字符串、布尔、对象等）直接转为字符串
-      else {
-        converted[key] = String(value)
+        result[key] = null
+      } else if (typeof value === 'object') {
+        result[key] = convertAllValuesToStrings(value) // 递归处理
+      } else if (typeof value === 'number') {
+        result[key] = Number.isInteger(value) ? String(value) : value.toString()
+      } else {
+        result[key] = String(value)
       }
     }
-    return converted
-  })
+    return result
+  } else {
+    // 非对象非数组的直接转为字符串或 null
+    return data === null || data === undefined ? null : String(data)
+  }
 }
 
+/**
+ *    filter = {
+      page_size: 20,
+      page_num: 1,
+      collect_id: collect_id
+    }
+ */
 export const queryCollectVideosListPage = (filter) => {
   // TODO queryCollectVideosListPage page
   // const queryCollectVideosListPage
 
-  let list = []
-  let total = 0
+  const db = getDb()
+
+  const GET_BILI_COLLECT_PAGE = `SELECT * FROM bili_video where collect_id = @collect_id LIMIT @page_size OFFSET (@page_num - 1) * @page_size;`
+
+  const GET_BILI_COLLECT_COUNT = `SELECT COUNT(*) AS total  FROM bili_video where collect_id = @collect_id;`
+
+  const collect_info = getbiliCollect(filter.collect_id)
+
+  filter.collect_id = collect_info.bili_collect_id ?? ''
+
+  const select_stmt = db.prepare(GET_BILI_COLLECT_PAGE)
+  const select_count_stmt = db.prepare(GET_BILI_COLLECT_COUNT)
+
+  const filterConverted = convertAllValuesToStrings(filter)
+
+  let list = select_stmt.all(filterConverted) ?? []
+  let total = select_count_stmt.get(filterConverted)['total'] ?? 0
+  console.log(JSON.stringify(list))
+  console.log(JSON.stringify(total))
 
   return {
     list,
@@ -213,4 +232,15 @@ export const insertBiliVideoToDb = (videos) => {
   console.log(typeof videos)
   let videosListConverted = convertAllValuesToStrings(videos) // 👈 确保所有字段都是字符串
   insertMany(videosListConverted) // 👈 批量插入
+}
+
+export const setCollectSyncDb = (sync) => {
+  const db = getDb()
+
+  const SQL_UPDATE_BILI_COLLECT_SYNC = `update bili_collect set sync = @sync  where id = @collect_id;`
+
+  const insert_stmt = db.prepare(SQL_UPDATE_BILI_COLLECT_SYNC)
+  let syncConverted = convertAllValuesToStrings(sync)
+
+  insert_stmt.run(syncConverted)
 }

@@ -11,7 +11,8 @@ import {
   insertCollectListMetadataToDb,
   queryCollectVideosListPage,
   getbiliCollect,
-  insertBiliVideoToDb
+  insertBiliVideoToDb,
+  setCollectSyncDb
 } from '../../database'
 import { log } from 'console'
 import { execFile } from 'child_process'
@@ -323,4 +324,10 @@ export const saveCollectVideos = (e, videosJson) => {
 
   const videos = JSON.parse(videosJson)
   insertBiliVideoToDb(videos)
+}
+
+export const setCollectSync = (e, syncJson) => {
+  const sync = JSON.parse(syncJson)
+
+  setCollectSyncDb(sync)
 }

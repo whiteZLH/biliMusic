@@ -15,7 +15,8 @@ import {
   queryCollectVideosList,
   getCollectListMetadata,
   getCollectVideoListFromBili,
-  saveCollectVideos
+  saveCollectVideos,
+  setCollectSync
 } from './registerFunc'
 
 export function registerEvents() {
@@ -34,5 +35,6 @@ export function registerEvents() {
   ipcMain.handle('queryCollectVideosList', queryCollectVideosList)
   ipcMain.handle('getCollectListMetadata', getCollectListMetadata)
   ipcMain.handle('getCollectVideoListFromBili', getCollectVideoListFromBili)
-  ipcMain.handle('saveCollectVideos', saveCollectVideos)
+  ipcMain.handle('saveCollectVideos', saveCollectVideos),
+    ipcMain.handle('setCollectSync', setCollectSync)
 }

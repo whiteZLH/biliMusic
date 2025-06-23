@@ -31,7 +31,8 @@ if (process.contextIsolated) {
       getCollectListMetadata: (id) => ipcRenderer.invoke('getCollectListMetadata', id),
       getCollectVideoListFromBili: (filter) =>
         ipcRenderer.invoke('getCollectVideoListFromBili', filter),
-      saveCollectVideos: (videos) => ipcRenderer.invoke('saveCollectVideos', videos)
+      saveCollectVideos: (videos) => ipcRenderer.invoke('saveCollectVideos', videos),
+      setCollectSync: (sync) => ipcRenderer.invoke('setCollectSync', sync)
     })
   } catch (error) {
     console.error(error)
